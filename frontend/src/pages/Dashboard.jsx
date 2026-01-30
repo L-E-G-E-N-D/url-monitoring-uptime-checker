@@ -10,7 +10,7 @@ function Dashboard() {
   const [newUrl, setNewUrl] = useState('')
   const [interval, setInterval] = useState(15)
   
-  const { token } = useAuth()
+  const { token, logout } = useAuth()
 
   // Helper to get headers with token
   const getHeaders = () => {
@@ -21,125 +21,20 @@ function Dashboard() {
     return headers
   }
 
-  const fetchMonitors = () => {
-    setLoading(true)
-    const headers = {}
-    if (token) headers['Authorization'] = `Bearer ${token}`
+  /* ... existing fetchMonitors ... */
 
-    fetch('/monitors', { headers })
-      .then(res => {
-        if (!res.ok) {
-          if (res.status === 401) throw new Error('Unauthorized - please login')
-          throw new Error('Failed to fetch monitors')
-        }
-        return res.json()
-      })
-      .then(data => {
-        setMonitors(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        setError(err.message)
-        setLoading(false)
-      })
-  }
+  /* ... existing useEffect ... */
 
-  useEffect(() => {
-    if (token) {
-        fetchMonitors()
-    } else {
-        // If no token, we can't fetch. Just stop loading.
-        setLoading(false)
-        // Optionally setup a redirect or empty state here, but Step 6 handles protection.
-    }
-  }, [token])
+  /* ... existing handlers ... */
 
-  const handleAddMonitor = (e) => {
-    e.preventDefault()
-    setError(null)
-
-    fetch('/monitors', {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify({ url: newUrl, checkIntervalMinutes: parseInt(interval) })
-    })
-    .then(res => {
-      if (!res.ok) {
-        if (res.status === 401) throw new Error('Unauthorized - please login')
-        return res.json().then(err => { throw new Error(err.message || 'Failed to create monitor') })
-      }
-      return res.json()
-    })
-    .then(() => {
-      setNewUrl('')
-      fetchMonitors() // Refresh list
-    })
-    .catch(err => setError(err.message))
-  }
-
-  const handleToggleActive = (monitor) => {
-    fetch(`/monitors/${monitor.id}`, {
-        method: 'PUT',
-        headers: getHeaders(),
-        body: JSON.stringify({ isActive: !monitor.isActive })
-    })
-    .then(res => {
-        if (!res.ok) throw new Error('Failed to update monitor')
-        return res.json()
-    })
-    .then(() => {
-        // Update local state
-        setMonitors(monitors.map(m => 
-            m.id === monitor.id ? { ...m, isActive: !monitor.isActive } : m
-        ))
-    })
-    .catch(err => setError(err.message))
-  }
-
-  const handleEditInterval = (monitor) => {
-    const newInterval = prompt('Enter new check interval in minutes:', monitor.checkIntervalMinutes)
-    if (!newInterval || isNaN(newInterval) || newInterval < 1) return
-
-    fetch(`/monitors/${monitor.id}`, {
-        method: 'PUT',
-        headers: getHeaders(),
-        body: JSON.stringify({ checkIntervalMinutes: parseInt(newInterval) })
-    })
-    .then(res => {
-        if (!res.ok) throw new Error('Failed to update monitor')
-        return res.json()
-    })
-    .then(() => {
-        setMonitors(monitors.map(m => 
-            m.id === monitor.id ? { ...m, checkIntervalMinutes: parseInt(newInterval) } : m
-        ))
-    })
-    .catch(err => setError(err.message))
-  }
-
-  const handleDeleteMonitor = (id) => {
-    if (!confirm('Are you sure you want to delete this monitor?')) return
-
-    fetch(`/monitors/${id}`, { 
-        method: 'DELETE',
-        headers: getHeaders()
-    })
-      .then(res => {
-        if (!res.ok) {
-           if (res.status === 401) throw new Error('Unauthorized - please login')
-           throw new Error('Failed to delete monitor')
-        }
-        return res.json()
-      })
-      .then(() => {
-        setMonitors(monitors.filter(m => m.id !== id))
-      })
-      .catch(err => setError(err.message))
-  }
+  /* ... */
 
   return (
     <div className="container">
-      <h1>Monitored URLs</h1>
+      <div className="dashboard-header">
+        <h1>Monitored URLs</h1>
+        <button onClick={logout} className="logout-btn">Logout</button>
+      </div>
       
       {!token && (
           <div className="error" style={{ textAlign: 'center' }}>
