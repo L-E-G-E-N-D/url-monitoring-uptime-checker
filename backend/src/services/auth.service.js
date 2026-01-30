@@ -2,7 +2,11 @@ const db = require('../db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET must be defined in environment variables');
+}
 
 async function register(email, password) {
     const existing = await db.query('SELECT id FROM users WHERE email = $1', [email]);
