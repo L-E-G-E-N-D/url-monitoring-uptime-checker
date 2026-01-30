@@ -1,1 +1,37 @@
-/* Minimal CSS */
+.container {
+    max_width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.error {
+    color: red;
+    background: #fee;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.monitor-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+.monitor-item {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.monitor-item strong {
+    font-size: 1.1em;
+}
+
+.interval {
+    color: #666;
+    font-size: 0.9em;
+}
