@@ -5,8 +5,7 @@ function App() {
   const [monitors, setMonitors] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-
-  /* Existing code... */
+  
   const [newUrl, setNewUrl] = useState('')
   const [interval, setInterval] = useState(15)
 
@@ -57,6 +56,23 @@ function App() {
     .catch(err => setError(err.message))
   }
 
+  const handleDeleteMonitor = (id) => {
+    if (!confirm('Are you sure you want to delete this monitor?')) return
+
+    fetch(`/monitors/${id}`, { method: 'DELETE' })
+      .then(res => {
+        if (!res.ok) {
+           if (res.status === 401) throw new Error('Unauthorized - please login')
+           throw new Error('Failed to delete monitor')
+        }
+        return res.json()
+      })
+      .then(() => {
+        setMonitors(monitors.filter(m => m.id !== id))
+      })
+      .catch(err => setError(err.message))
+  }
+
   return (
     <div className="container">
       <h1>Monitored URLs</h1>
@@ -79,7 +95,6 @@ function App() {
         />
         <button type="submit">Add Monitor</button>
       </form>
-  /* ... rest of render ... */
       
       {loading && <p>Loading...</p>}
       {error && <p className="error">{error}</p>}
@@ -87,14 +102,22 @@ function App() {
       {!loading && !error && (
         <div className="monitor-list">
           {monitors.length === 0 ? (
-            <p>No monitors found.</p>
+            <p>No monitors found. Add one!</p>
           ) : (
             <ul>
               {monitors.map(monitor => (
                 <li key={monitor.id} className="monitor-item">
-                  <strong>{monitor.url}</strong>
-                  <span> - {monitor.isActive ? 'Active' : 'Paused'}</span>
-                  <span className="interval"> ({monitor.checkIntervalMinutes}m)</span>
+                  <div className="monitor-info">
+                    <strong>{monitor.url}</strong>
+                    <span> - {monitor.isActive ? 'Active' : 'Paused'}</span>
+                    <span className="interval"> ({monitor.checkIntervalMinutes}m)</span>
+                  </div>
+                  <button 
+                    onClick={() => handleDeleteMonitor(monitor.id)} 
+                    className="delete-btn"
+                  >
+                    Delete
+                  </button>
                 </li>
               ))}
             </ul>
