@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useAuth } from '../context/AuthContext'
 import '../App.css'
 
 function Dashboard() {
@@ -8,10 +9,24 @@ function Dashboard() {
   
   const [newUrl, setNewUrl] = useState('')
   const [interval, setInterval] = useState(15)
+  
+  const { token } = useAuth()
+
+  // Helper to get headers with token
+  const getHeaders = () => {
+    const headers = { 'Content-Type': 'application/json' }
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`
+    }
+    return headers
+  }
 
   const fetchMonitors = () => {
     setLoading(true)
-    fetch('/monitors')
+    const headers = {}
+    if (token) headers['Authorization'] = `Bearer ${token}`
+
+    fetch('/monitors', { headers })
       .then(res => {
         if (!res.ok) {
           if (res.status === 401) throw new Error('Unauthorized - please login')
@@ -30,8 +45,14 @@ function Dashboard() {
   }
 
   useEffect(() => {
-    fetchMonitors()
-  }, [])
+    if (token) {
+        fetchMonitors()
+    } else {
+        // If no token, we can't fetch. Just stop loading.
+        setLoading(false)
+        // Optionally setup a redirect or empty state here, but Step 6 handles protection.
+    }
+  }, [token])
 
   const handleAddMonitor = (e) => {
     e.preventDefault()
@@ -39,7 +60,7 @@ function Dashboard() {
 
     fetch('/monitors', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getHeaders(),
       body: JSON.stringify({ url: newUrl, checkIntervalMinutes: parseInt(interval) })
     })
     .then(res => {
@@ -59,7 +80,7 @@ function Dashboard() {
   const handleToggleActive = (monitor) => {
     fetch(`/monitors/${monitor.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify({ isActive: !monitor.isActive })
     })
     .then(res => {
@@ -81,7 +102,7 @@ function Dashboard() {
 
     fetch(`/monitors/${monitor.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getHeaders(),
         body: JSON.stringify({ checkIntervalMinutes: parseInt(newInterval) })
     })
     .then(res => {
@@ -99,7 +120,10 @@ function Dashboard() {
   const handleDeleteMonitor = (id) => {
     if (!confirm('Are you sure you want to delete this monitor?')) return
 
-    fetch(`/monitors/${id}`, { method: 'DELETE' })
+    fetch(`/monitors/${id}`, { 
+        method: 'DELETE',
+        headers: getHeaders()
+    })
       .then(res => {
         if (!res.ok) {
            if (res.status === 401) throw new Error('Unauthorized - please login')
@@ -117,29 +141,37 @@ function Dashboard() {
     <div className="container">
       <h1>Monitored URLs</h1>
       
-      <form onSubmit={handleAddMonitor} className="add-form">
-        <input 
-          type="url" 
-          placeholder="https://example.com" 
-          value={newUrl} 
-          onChange={e => setNewUrl(e.target.value)}
-          required 
-        />
-        <input 
-          type="number" 
-          placeholder="Interval (min)" 
-          value={interval} 
-          onChange={e => setInterval(e.target.value)}
-          min="1"
-          required 
-        />
-        <button type="submit">Add Monitor</button>
-      </form>
+      {!token && (
+          <div className="error" style={{ textAlign: 'center' }}>
+              You are not logged in. <a href="/login">Login</a> to manage monitors.
+          </div>
+      )}
+
+      {token && (
+        <form onSubmit={handleAddMonitor} className="add-form">
+            <input 
+            type="url" 
+            placeholder="https://example.com" 
+            value={newUrl} 
+            onChange={e => setNewUrl(e.target.value)}
+            required 
+            />
+            <input 
+            type="number" 
+            placeholder="Interval (min)" 
+            value={interval} 
+            onChange={e => setInterval(e.target.value)}
+            min="1"
+            required 
+            />
+            <button type="submit">Add Monitor</button>
+        </form>
+      )}
       
       {loading && <p>Loading...</p>}
       {error && <p className="error">{error}</p>}
       
-      {!loading && !error && (
+      {!loading && !error && token && (
         <div className="monitor-list">
           {monitors.length === 0 ? (
             <p>No monitors found. Add one!</p>

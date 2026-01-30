@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import '../App.css'
 
 function Login() {
@@ -7,6 +8,7 @@ function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleLogin = (e) => {
     e.preventDefault()
@@ -24,8 +26,7 @@ function Login() {
       return res.json()
     })
     .then(data => {
-      // Temporary storage until AuthContext is implemented
-      localStorage.setItem('token', data.token)
+      login(data.token)
       navigate('/')
     })
     .catch(err => setError(err.message))
