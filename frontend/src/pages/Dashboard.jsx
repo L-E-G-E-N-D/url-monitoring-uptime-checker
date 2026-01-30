@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import '../App.css'
 
 function Dashboard() {
+  // Version: Fix ReferenceError Force Update
   const [monitors, setMonitors] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -138,7 +139,7 @@ function Dashboard() {
   return (
     <div className="container">
       <div className="dashboard-header">
-        <h1>Monitored URLs</h1>
+        <h1>Monitored URLs (Verified)</h1>
         <button onClick={logout} className="logout-btn">Logout</button>
       </div>
       
@@ -152,6 +153,8 @@ function Dashboard() {
         <form onSubmit={handleAddMonitor} className="add-form">
             <input 
             type="url" 
+            name="url"
+            id="url"
             placeholder="https://example.com" 
             value={newUrl} 
             onChange={e => setNewUrl(e.target.value)}
@@ -159,6 +162,8 @@ function Dashboard() {
             />
             <input 
             type="number" 
+            name="interval"
+            id="interval"
             placeholder="Interval (min)" 
             value={interval} 
             onChange={e => setInterval(e.target.value)}

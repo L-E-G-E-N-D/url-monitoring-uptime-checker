@@ -36,18 +36,22 @@ function Register() {
       
       <form onSubmit={handleRegister} className="auth-form">
         <div className="form-group">
-          <label>Email</label>
+          <label htmlFor="register-email">Email</label>
           <input 
             type="email" 
+            id="register-email"
+            name="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
           />
         </div>
         <div className="form-group">
-          <label>Password</label>
+          <label htmlFor="register-password">Password</label>
           <input 
             type="password" 
+            id="register-password"
+            name="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
