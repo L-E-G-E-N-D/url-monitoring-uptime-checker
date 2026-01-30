@@ -56,6 +56,46 @@ function App() {
     .catch(err => setError(err.message))
   }
 
+  const handleToggleActive = (monitor) => {
+    fetch(`/monitors/${monitor.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isActive: !monitor.isActive })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('Failed to update monitor')
+        return res.json()
+    })
+    .then(() => {
+        // Update local state
+        setMonitors(monitors.map(m => 
+            m.id === monitor.id ? { ...m, isActive: !monitor.isActive } : m
+        ))
+    })
+    .catch(err => setError(err.message))
+  }
+
+  const handleEditInterval = (monitor) => {
+    const newInterval = prompt('Enter new check interval in minutes:', monitor.checkIntervalMinutes)
+    if (!newInterval || isNaN(newInterval) || newInterval < 1) return
+
+    fetch(`/monitors/${monitor.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ checkIntervalMinutes: parseInt(newInterval) })
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('Failed to update monitor')
+        return res.json()
+    })
+    .then(() => {
+        setMonitors(monitors.map(m => 
+            m.id === monitor.id ? { ...m, checkIntervalMinutes: parseInt(newInterval) } : m
+        ))
+    })
+    .catch(err => setError(err.message))
+  }
+
   const handleDeleteMonitor = (id) => {
     if (!confirm('Are you sure you want to delete this monitor?')) return
 
@@ -112,12 +152,26 @@ function App() {
                     <span> - {monitor.isActive ? 'Active' : 'Paused'}</span>
                     <span className="interval"> ({monitor.checkIntervalMinutes}m)</span>
                   </div>
-                  <button 
-                    onClick={() => handleDeleteMonitor(monitor.id)} 
-                    className="delete-btn"
-                  >
-                    Delete
-                  </button>
+                  <div className="actions">
+                    <button 
+                        onClick={() => handleToggleActive(monitor)}
+                        className="action-btn"
+                    >
+                        {monitor.isActive ? 'Pause' : 'Resume'}
+                    </button>
+                    <button 
+                        onClick={() => handleEditInterval(monitor)}
+                        className="action-btn"
+                    >
+                        Edit
+                    </button>
+                    <button 
+                        onClick={() => handleDeleteMonitor(monitor.id)} 
+                        className="delete-btn"
+                    >
+                        Delete
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
