@@ -23,10 +23,25 @@ async function createMonitor(userId, url, checkIntervalMinutes) {
 async function getMonitorsByUser(userId) {
   const result = await db.query(
     `
-    SELECT id, url, is_active, check_interval_minutes, created_at
-    FROM monitors
-    WHERE user_id = $1
-    ORDER BY created_at DESC
+    SELECT 
+      m.id, 
+      m.url, 
+      m.is_active, 
+      m.check_interval_minutes, 
+      m.created_at,
+      last_check.status,
+      last_check.response_time_ms,
+      last_check.checked_at as last_checked_at
+    FROM monitors m
+    LEFT JOIN LATERAL (
+      SELECT status, response_time_ms, checked_at
+      FROM monitor_checks
+      WHERE monitor_id = m.id
+      ORDER BY checked_at DESC
+      LIMIT 1
+    ) last_check ON true
+    WHERE m.user_id = $1
+    ORDER BY m.created_at DESC
     `,
     [userId]
   );
@@ -36,7 +51,12 @@ async function getMonitorsByUser(userId) {
     url: row.url,
     isActive: row.is_active,
     checkIntervalMinutes: row.check_interval_minutes,
-    createdAt: row.created_at
+    createdAt: row.created_at,
+    lastCheck: row.status ? {
+      status: row.status,
+      responseTime: row.response_time_ms,
+      checkedAt: row.last_checked_at
+    } : null
   }));
 }
 
