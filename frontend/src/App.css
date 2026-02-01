@@ -225,3 +225,84 @@ button.delete-btn:hover {
   color: #495057;
   border-color: #adb5bd;
 }
+
+/* Dashboard Enhancements */
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.refresh-btn {
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.refresh-btn:hover {
+  background: #0056b3;
+}
+
+.monitor-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.monitor-main {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.monitor-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: white;
+}
+
+.status-up {
+  background-color: #28a745;
+}
+
+.status-down {
+  background-color: #dc3545;
+}
+
+.status-pending {
+  background-color: #6c757d;
+}
+
+.monitor-details {
+  display: flex;
+  gap: 15px;
+  font-size: 0.85em;
+  color: #6c757d;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+}
+
+.paused-badge {
+  color: #ffc107;
+  font-weight: bold;
+}

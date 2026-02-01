@@ -31,7 +31,13 @@ function Dashboard() {
       .then(res => {
         if (!res.ok) {
           if (res.status === 401) throw new Error('Unauthorized - please login')
-          throw new Error('Failed to fetch monitors')
+          return res.json().then(err => { 
+            throw new Error(err.message || err.error || `Error ${res.status}: ${res.statusText}`) 
+          }).catch(e => {
+             // Fallback if json parse fails or if the above throw is caught (it won't be caught here)
+             // Actually parsing might fail if response is not json
+             throw new Error(`Error ${res.status}: ${res.statusText}`)
+          })
         }
         return res.json()
       })
@@ -140,7 +146,12 @@ function Dashboard() {
     <div className="container">
       <div className="dashboard-header">
         <h1>Monitored URLs (Verified)</h1>
-        <button onClick={logout} className="logout-btn">Logout</button>
+        <div className="header-actions">
+            <button onClick={fetchMonitors} className="refresh-btn" disabled={loading}>
+                {loading ? 'Refreshing...' : 'Refresh Status'}
+            </button>
+            <button onClick={logout} className="logout-btn">Logout</button>
+        </div>
       </div>
       
       {!token && (
@@ -185,10 +196,29 @@ function Dashboard() {
             <ul>
               {monitors.map(monitor => (
                 <li key={monitor.id} className="monitor-item">
-                  <div className="monitor-info">
-                    <strong>{monitor.url}</strong>
-                    <span> - {monitor.isActive ? 'Active' : 'Paused'}</span>
-                    <span className="interval"> ({monitor.checkIntervalMinutes}m)</span>
+                  <div className="monitor-main">
+                    <div className="monitor-header">
+                        <strong>{monitor.url}</strong>
+                        <span className={`status-badge ${monitor.lastCheck?.status === 'UP' ? 'status-up' : 'status-down'}`}>
+                            {monitor.lastCheck?.status || 'PENDING'}
+                        </span>
+                    </div>
+                    <div className="monitor-details">
+                        <span className="detail-item">
+                            Interval: {monitor.checkIntervalMinutes}m
+                        </span>
+                        {monitor.lastCheck && (
+                            <>
+                                <span className="detail-item">
+                                    Response: {monitor.lastCheck.responseTime}ms
+                                </span>
+                                <span className="detail-item">
+                                    Last Check: {new Date(monitor.lastCheck.checkedAt).toLocaleString()}
+                                </span>
+                            </>
+                        )}
+                        {!monitor.isActive && <span className="detail-item paused-badge">PAUSED</span>}
+                    </div>
                   </div>
                   <div className="actions">
                     <button 
