@@ -1,5 +1,6 @@
 const axios = require('axios');
 const db = require('../db');
+const { sendAlertEmail } = require('./alert.service');
 
 async function performCheck(monitor) {
     const startTime = Date.now();
@@ -45,6 +46,13 @@ async function performCheck(monitor) {
 
         if (monitor.status !== status) {
             console.log(`[ALERT] Monitor ${monitor.url} changed from ${monitor.status || 'PENDING'} to ${status}`);
+
+            await sendAlertEmail(
+                monitor.user_email,
+                monitor.url,
+                status,
+                endTime
+            );
 
             await db.query(
                 `UPDATE monitors SET status = $1 WHERE id = $2`,
