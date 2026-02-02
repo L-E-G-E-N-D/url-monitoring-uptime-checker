@@ -143,22 +143,32 @@ function Dashboard() {
   }
 
   return (
-    <div className="container">
-      <div className="dashboard-header">
-        <h1>Monitored URLs (Verified)</h1>
-        <div className="header-actions">
-            <button onClick={fetchMonitors} className="refresh-btn" disabled={loading}>
-                {loading ? 'Refreshing...' : 'Refresh Status'}
-            </button>
-            <button onClick={logout} className="logout-btn">Logout</button>
-        </div>
-      </div>
-      
-      {!token && (
-          <div className="error" style={{ textAlign: 'center' }}>
-              You are not logged in. <a href="/login">Login</a> to manage monitors.
+    <div className="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Monitors</h1>
+          <div className="flex gap-3">
+              <button 
+                onClick={fetchMonitors} 
+                disabled={loading}
+                className="px-4 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-sm disabled:opacity-50"
+              >
+                  {loading ? 'Refreshing...' : 'Refresh'}
+              </button>
+              <button 
+                onClick={logout} 
+                className="px-4 py-2 bg-white border border-slate-300 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 shadow-sm"
+              >
+                Logout
+              </button>
           </div>
-      )}
+        </div>
+        
+        {!token && (
+            <div className="mb-8 p-4 bg-yellow-50 border border-yellow-200 rounded-md text-center text-yellow-800">
+                You are not logged in. <a href="/login" className="underline font-medium hover:text-yellow-900">Login</a> to manage monitors.
+            </div>
+        )}
 
       {token && (
         <form onSubmit={handleAddMonitor} className="add-form">
@@ -249,6 +259,7 @@ function Dashboard() {
           )}
         </div>
       )}
+      </div>
     </div>
   )
 }
