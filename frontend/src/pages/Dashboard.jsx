@@ -199,64 +199,79 @@ function Dashboard() {
       {error && <p className="error">{error}</p>}
       
       {!loading && !error && token && (
-        <div className="monitor-list">
-          {monitors.length === 0 ? (
-            <p>No monitors found. Add one!</p>
-          ) : (
-            <ul>
-              {monitors.map(monitor => (
-                <li key={monitor.id} className="monitor-item">
-                  <div className="monitor-main">
-                    <div className="monitor-header">
-                        <strong>{monitor.url}</strong>
-                        <span className={`status-badge ${monitor.lastCheck?.status === 'UP' ? 'status-up' : 'status-down'}`}>
-                            {monitor.lastCheck?.status || 'PENDING'}
+        <div className="bg-white shadow overflow-hidden sm:rounded-md border border-slate-200">
+          <ul role="list" className="divide-y divide-slate-200">
+            {monitors.length === 0 ? (
+              <li className="px-6 py-12 text-center text-slate-500 text-sm">
+                No monitors found. Add one above to start tracking.
+              </li>
+            ) : (
+              monitors.map(monitor => (
+                <li key={monitor.id} className="px-6 py-6 hover:bg-slate-50 transition-colors duration-150 ease-in-out">
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-3 mb-1">
+                        <p className="text-lg font-medium text-slate-900 truncate">{monitor.url}</p>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
+                          monitor.lastCheck?.status === 'UP' 
+                            ? 'bg-green-100 text-green-800' 
+                            : monitor.lastCheck?.status === 'DOWN'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-slate-100 text-slate-800'
+                        }`}>
+                          {monitor.lastCheck?.status || 'PENDING'}
                         </span>
-                    </div>
-                    <div className="monitor-details">
-                        <span className="detail-item">
-                            Interval: {monitor.checkIntervalMinutes}m
-                        </span>
-                        {monitor.lastCheck && (
-                            <>
-                                <span className="detail-item">
-                                    Response: {monitor.lastCheck.responseTime}ms
-                                </span>
-                                <span className="detail-item">
-                                    Last Check: {new Date(monitor.lastCheck.checkedAt).toLocaleString()}
-                                </span>
-                                <span className="detail-item">
-                                    Uptime (24h): {monitor.uptimePercent !== null ? `${monitor.uptimePercent}%` : 'N/A'}
-                                </span>
-                            </>
+                        {!monitor.isActive && (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Paused
+                          </span>
                         )}
-                        {!monitor.isActive && <span className="detail-item paused-badge">PAUSED</span>}
+                      </div>
+                      <div className="mt-2 flex items-center text-sm text-slate-500 gap-x-6">
+                         <div className="flex items-center gap-1">
+                            <span className="font-medium text-slate-700">Interval:</span> {monitor.checkIntervalMinutes}m
+                         </div>
+                         {monitor.lastCheck && (
+                            <>
+                                <div className="flex items-center gap-1">
+                                    <span className="font-medium text-slate-700">Response:</span> {monitor.lastCheck.responseTime}ms
+                                </div>
+                                <div className="flex items-center gap-1 phone:hidden">
+                                     <span className="font-medium text-slate-700">Uptime (24h):</span> 
+                                     {monitor.uptimePercent !== null ? <span className="text-slate-900">{monitor.uptimePercent}%</span> : 'N/A'}
+                                </div>
+                                <div className="flex items-center gap-1 text-slate-400">
+                                    Last Check: {new Date(monitor.lastCheck.checkedAt).toLocaleTimeString()}
+                                </div>
+                            </>
+                         )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="actions">
-                    <button 
-                        onClick={() => handleToggleActive(monitor)}
-                        className="action-btn"
-                    >
-                        {monitor.isActive ? 'Pause' : 'Resume'}
-                    </button>
-                    <button 
-                        onClick={() => handleEditInterval(monitor)}
-                        className="action-btn"
-                    >
-                        Edit
-                    </button>
-                    <button 
-                        onClick={() => handleDeleteMonitor(monitor.id)} 
-                        className="delete-btn"
-                    >
-                        Delete
-                    </button>
+                    <div className="flex items-center gap-3 ml-4">
+                      <button 
+                          onClick={() => handleToggleActive(monitor)}
+                          className="text-sm font-medium text-blue-600 hover:text-blue-500 bg-white hover:bg-blue-50 px-3 py-1.5 rounded-md border border-transparent transition-colors"
+                      >
+                          {monitor.isActive ? 'Pause' : 'Resume'}
+                      </button>
+                      <button 
+                          onClick={() => handleEditInterval(monitor)}
+                          className="text-sm font-medium text-slate-600 hover:text-slate-500 bg-white hover:bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200 transition-colors"
+                      >
+                          Edit
+                      </button>
+                      <button 
+                          onClick={() => handleDeleteMonitor(monitor.id)} 
+                          className="text-sm font-medium text-red-600 hover:text-red-500 bg-white hover:bg-red-50 px-3 py-1.5 rounded-md border border-transparent transition-colors"
+                      >
+                          Delete
+                      </button>
+                    </div>
                   </div>
                 </li>
-              ))}
-            </ul>
-          )}
+              ))
+            )}
+          </ul>
         </div>
       )}
       </div>
