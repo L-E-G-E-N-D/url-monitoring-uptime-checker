@@ -13,6 +13,7 @@ async function performCheck(monitor) {
         const response = await axios.get(monitor.url, {
             timeout: 5000,
             validateStatus: () => true,
+            headers: { 'User-Agent': 'UptimeChecker/1.0' }
         });
 
         endTime = Date.now();
@@ -25,13 +26,13 @@ async function performCheck(monitor) {
             status = 'DOWN';
         }
     } catch (error) {
-        const endTime = Date.now();
+        endTime = Date.now();
         responseTime = endTime - startTime;
 
         if (error.response) {
             statusCode = error.response.status;
-        } else if (error.request) {
-            statusCode = 0;
+        } else if (error.code === 'ECONNABORTED') {
+            statusCode = 408;
         } else {
             statusCode = 0;
         }
@@ -48,7 +49,7 @@ async function performCheck(monitor) {
         if (monitor.status !== status) {
             console.log(`[ALERT] Monitor ${monitor.url} changed from ${monitor.status || 'PENDING'} to ${status}`);
 
-            console.log(`[DEBUG] Attempting to email: ${monitor.user_email} for ${monitor.url}`);
+
 
             await sendAlertEmail(
                 monitor.user_email,
