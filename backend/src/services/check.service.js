@@ -4,6 +4,7 @@ const { sendAlertEmail } = require('./alert.service');
 
 async function performCheck(monitor) {
     const startTime = Date.now();
+    let endTime = startTime;
     let status = 'DOWN';
     let statusCode = null;
     let responseTime = 0;
@@ -14,7 +15,7 @@ async function performCheck(monitor) {
             validateStatus: () => true,
         });
 
-        const endTime = Date.now();
+        endTime = Date.now();
         responseTime = endTime - startTime;
         statusCode = response.status;
 
@@ -46,6 +47,8 @@ async function performCheck(monitor) {
 
         if (monitor.status !== status) {
             console.log(`[ALERT] Monitor ${monitor.url} changed from ${monitor.status || 'PENDING'} to ${status}`);
+
+            console.log(`[DEBUG] Attempting to email: ${monitor.user_email} for ${monitor.url}`);
 
             await sendAlertEmail(
                 monitor.user_email,
