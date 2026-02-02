@@ -215,6 +215,9 @@ function Dashboard() {
                                 <span className="detail-item">
                                     Last Check: {new Date(monitor.lastCheck.checkedAt).toLocaleString()}
                                 </span>
+                                <span className="detail-item">
+                                    Uptime (24h): {monitor.uptimePercent !== null ? `${monitor.uptimePercent}%` : 'N/A'}
+                                </span>
                             </>
                         )}
                         {!monitor.isActive && <span className="detail-item paused-badge">PAUSED</span>}
