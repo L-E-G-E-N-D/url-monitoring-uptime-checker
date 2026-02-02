@@ -31,7 +31,8 @@ async function getMonitorsByUser(userId) {
       m.created_at,
       last_check.status,
       last_check.response_time_ms,
-      last_check.checked_at as last_checked_at
+      last_check.checked_at as last_checked_at,
+      uptime_stats.uptime_percent
     FROM monitors m
     LEFT JOIN LATERAL (
       SELECT status, response_time_ms, checked_at
@@ -40,6 +41,16 @@ async function getMonitorsByUser(userId) {
       ORDER BY checked_at DESC
       LIMIT 1
     ) last_check ON true
+    LEFT JOIN LATERAL (
+      SELECT 
+        ROUND(
+          (COUNT(CASE WHEN status = 'UP' THEN 1 END)::DECIMAL / NULLIF(COUNT(*), 0)) * 100, 
+          1
+        ) as uptime_percent
+      FROM monitor_checks
+      WHERE monitor_id = m.id
+      AND checked_at > NOW() - INTERVAL '24 hours'
+    ) uptime_stats ON true
     WHERE m.user_id = $1
     ORDER BY m.created_at DESC
     `,
@@ -52,6 +63,7 @@ async function getMonitorsByUser(userId) {
     isActive: row.is_active,
     checkIntervalMinutes: row.check_interval_minutes,
     createdAt: row.created_at,
+    uptimePercent: row.uptime_percent !== null ? parseFloat(row.uptime_percent) : null,
     lastCheck: row.status ? {
       status: row.status,
       responseTime: row.response_time_ms,
