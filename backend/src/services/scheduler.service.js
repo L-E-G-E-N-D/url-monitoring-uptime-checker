@@ -17,8 +17,9 @@ async function runChecks() {
         // Find monitors that need checking
         // Logic: active monitors where no check exists OR last check was >= interval ago
         const query = `
-            SELECT m.*
+            SELECT m.*, u.email as user_email
             FROM monitors m
+            JOIN users u ON m.user_id = u.id
             LEFT JOIN (
                 SELECT monitor_id, MAX(checked_at) as last_checked
                 FROM monitor_checks
