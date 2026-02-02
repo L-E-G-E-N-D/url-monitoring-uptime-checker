@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS monitors (
   url TEXT NOT NULL,
   check_interval_minutes INT NOT NULL CHECK (check_interval_minutes > 0),
   is_active BOOLEAN DEFAULT true,
+  status TEXT DEFAULT 'PENDING',
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
