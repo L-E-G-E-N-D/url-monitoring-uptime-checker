@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import '../App.css'
 
 function Dashboard() {
-  // Version: Fix ReferenceError Force Update
+  // No comments
   const [monitors, setMonitors] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -13,7 +13,6 @@ function Dashboard() {
   
   const { token, logout } = useAuth()
 
-  // Helper to get headers with token
   const getHeaders = () => {
     const headers = { 'Content-Type': 'application/json' }
     if (token) {
@@ -34,8 +33,6 @@ function Dashboard() {
           return res.json().then(err => { 
             throw new Error(err.message || err.error || `Error ${res.status}: ${res.statusText}`) 
           }).catch(e => {
-             // Fallback if json parse fails or if the above throw is caught (it won't be caught here)
-             // Actually parsing might fail if response is not json
              throw new Error(`Error ${res.status}: ${res.statusText}`)
           })
         }
@@ -77,7 +74,7 @@ function Dashboard() {
     })
     .then(() => {
       setNewUrl('')
-      fetchMonitors() // Refresh list
+      fetchMonitors()
     })
     .catch(err => setError(err.message))
   }
@@ -93,7 +90,6 @@ function Dashboard() {
         return res.json()
     })
     .then(() => {
-        // Update local state
         setMonitors(monitors.map(m => 
             m.id === monitor.id ? { ...m, isActive: !monitor.isActive } : m
         ))

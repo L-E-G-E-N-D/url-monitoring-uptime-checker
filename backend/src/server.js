@@ -36,7 +36,6 @@ const gracefulShutdown = () => {
         });
     });
 
-    // Force close if it takes too long
     setTimeout(() => {
         console.error('Could not close connections in time, forcefully shutting down');
         process.exit(1);
