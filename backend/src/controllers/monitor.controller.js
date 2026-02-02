@@ -10,6 +10,19 @@ async function createMonitor(req, res) {
     });
   }
 
+  try {
+    const parsedUrl = new URL(url);
+    if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+      throw new Error('Only HTTP/HTTPS protocols are supported');
+    }
+  } catch (err) {
+    return res.status(400).json({ error: { message: 'Invalid URL format' } });
+  }
+
+  if (isNaN(checkIntervalMinutes) || checkIntervalMinutes < 1) {
+    return res.status(400).json({ error: { message: 'Interval must be at least 1 minute' } });
+  }
+
   const monitor = await monitorService.createMonitor(
     userId,
     url,
