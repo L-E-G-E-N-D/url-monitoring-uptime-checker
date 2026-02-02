@@ -171,27 +171,36 @@ function Dashboard() {
         )}
 
       {token && (
-        <form onSubmit={handleAddMonitor} className="add-form">
+        <form onSubmit={handleAddMonitor} className="mb-8 bg-white shadow sm:rounded-lg p-6 flex flex-col sm:flex-row gap-4 border border-slate-200">
             <input 
-            type="url" 
-            name="url"
-            id="url"
-            placeholder="https://example.com" 
-            value={newUrl} 
-            onChange={e => setNewUrl(e.target.value)}
-            required 
+              type="url" 
+              name="url"
+              id="url"
+              placeholder="Enter URL to monitor (e.g. https://google.com)" 
+              value={newUrl} 
+              onChange={e => setNewUrl(e.target.value)}
+              required 
+              className="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border-0 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
             />
-            <input 
-            type="number" 
-            name="interval"
-            id="interval"
-            placeholder="Interval (min)" 
-            value={interval} 
-            onChange={e => setInterval(e.target.value)}
-            min="1"
-            required 
-            />
-            <button type="submit">Add Monitor</button>
+            <div className="sm:w-32">
+              <input 
+                type="number" 
+                name="interval"
+                id="interval"
+                placeholder="Int (m)" 
+                value={interval} 
+                onChange={e => setInterval(e.target.value)}
+                min="1"
+                required 
+                className="block w-full px-3 py-2 rounded-md border-0 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+              />
+            </div>
+            <button 
+              type="submit"
+              className="inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+            >
+              Add Monitor
+            </button>
         </form>
       )}
       
