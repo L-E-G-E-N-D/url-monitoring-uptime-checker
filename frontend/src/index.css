@@ -1,6 +1,10 @@
-/* Minimal global CSS */
-body {
-  font-family: sans-serif;
-  margin: 0;
-  padding: 20px;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base HTML styles for that 'calm' look */
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
 }
