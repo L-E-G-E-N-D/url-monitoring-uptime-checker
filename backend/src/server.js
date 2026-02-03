@@ -21,8 +21,22 @@ if (missing.length > 0) {
 const db = require('./db');
 const scheduler = require('./services/scheduler.service');
 
-const server = app.listen(PORT, () => {
+const fs = require('fs');
+const path = require('path');
+
+const server = app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
+
+    try {
+        const schemaPath = path.join(__dirname, 'db', 'schema.sql');
+        const schemaSql = fs.readFileSync(schemaPath, 'utf8');
+        await db.query(schemaSql);
+        console.log('Database schema initialized');
+    } catch (err) {
+        console.error('Failed to initialize database schema:', err);
+        // Don't exit, maybe it's just a connection blip, but let it be known
+    }
+
     scheduler.startScheduler();
 });
 
@@ -36,6 +50,7 @@ const gracefulShutdown = () => {
         });
     });
 
+    // Force close if it takes too long
     setTimeout(() => {
         console.error('Could not close connections in time, forcefully shutting down');
         process.exit(1);
