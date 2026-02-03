@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import '../App.css'
+import API_BASE_URL from '../config'
+
+// ... (Removed)
 
 function Register() {
   const [email, setEmail] = useState('')
@@ -12,7 +14,7 @@ function Register() {
     e.preventDefault()
     setError(null)
 
-    fetch('/auth/register', {
+    fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })

@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import '../App.css'
+import API_BASE_URL from '../config'
+
+// ... (Removed)
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -14,7 +16,7 @@ function Login() {
     e.preventDefault()
     setError(null)
 
-    fetch('/auth/login', {
+    fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })

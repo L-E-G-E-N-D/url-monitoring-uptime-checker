@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import '../App.css'
+import API_BASE_URL from '../config'
+
+// ... in fetch calls: (Removed)
 
 function Dashboard() {
-  // No comments
+  // Version: Fix ReferenceError Force Update
   const [monitors, setMonitors] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -13,6 +15,7 @@ function Dashboard() {
   
   const { token, logout } = useAuth()
 
+  // Helper to get headers with token
   const getHeaders = () => {
     const headers = { 'Content-Type': 'application/json' }
     if (token) {
@@ -26,13 +29,15 @@ function Dashboard() {
     const headers = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
-    fetch('/monitors', { headers })
+    fetch(`${API_BASE_URL}/monitors`, { headers })
       .then(res => {
         if (!res.ok) {
           if (res.status === 401) throw new Error('Unauthorized - please login')
           return res.json().then(err => { 
             throw new Error(err.message || err.error || `Error ${res.status}: ${res.statusText}`) 
           }).catch(e => {
+             // Fallback if json parse fails or if the above throw is caught (it won't be caught here)
+             // Actually parsing might fail if response is not json
              throw new Error(`Error ${res.status}: ${res.statusText}`)
           })
         }
@@ -60,7 +65,7 @@ function Dashboard() {
     e.preventDefault()
     setError(null)
 
-    fetch('/monitors', {
+    fetch(`${API_BASE_URL}/monitors`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ url: newUrl, checkIntervalMinutes: parseInt(interval) })
@@ -74,13 +79,13 @@ function Dashboard() {
     })
     .then(() => {
       setNewUrl('')
-      fetchMonitors()
+      fetchMonitors() // Refresh list
     })
     .catch(err => setError(err.message))
   }
 
   const handleToggleActive = (monitor) => {
-    fetch(`/monitors/${monitor.id}`, {
+    fetch(`${API_BASE_URL}/monitors/${monitor.id}`, {
         method: 'PUT',
         headers: getHeaders(),
         body: JSON.stringify({ isActive: !monitor.isActive })
@@ -90,6 +95,7 @@ function Dashboard() {
         return res.json()
     })
     .then(() => {
+        // Update local state
         setMonitors(monitors.map(m => 
             m.id === monitor.id ? { ...m, isActive: !monitor.isActive } : m
         ))
@@ -101,7 +107,7 @@ function Dashboard() {
     const newInterval = prompt('Enter new check interval in minutes:', monitor.checkIntervalMinutes)
     if (!newInterval || isNaN(newInterval) || newInterval < 1) return
 
-    fetch(`/monitors/${monitor.id}`, {
+    fetch(`${API_BASE_URL}/monitors/${monitor.id}`, {
         method: 'PUT',
         headers: getHeaders(),
         body: JSON.stringify({ checkIntervalMinutes: parseInt(newInterval) })
@@ -121,7 +127,7 @@ function Dashboard() {
   const handleDeleteMonitor = (id) => {
     if (!confirm('Are you sure you want to delete this monitor?')) return
 
-    fetch(`/monitors/${id}`, { 
+    fetch(`${API_BASE_URL}/monitors/${id}`, { 
         method: 'DELETE',
         headers: getHeaders()
     })
