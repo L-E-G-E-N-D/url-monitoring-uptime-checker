@@ -1,8 +1,10 @@
 const express = require('express');
+const cors = require('cors');
 const monitorRoutes = require('./routes/monitor.routes');
 const authRoutes = require('./routes/auth.routes');
 
 const app = express();
+app.use(cors()); // Enable CORS for all origins
 app.use(express.json());
 
 app.get('/health', (req, res) => {
