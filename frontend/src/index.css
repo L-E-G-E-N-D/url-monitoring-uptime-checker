@@ -1,3 +1,4 @@
 @import "tailwindcss";
+@source "../src";
 
-/* Global styles moved to index.html to avoid @apply issues in v4 */
+@custom-variant dark (&:where(.dark, .dark *));
