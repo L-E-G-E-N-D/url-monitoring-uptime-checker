@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import API_BASE_URL from '../config'
 import Header from '../components/Header'
 import SummaryCards from '../components/SummaryCards'
@@ -17,6 +18,7 @@ function Dashboard() {
   const [filterStatus, setFilterStatus] = useState('all') // all, active, paused, down
 
   const { token } = useAuth()
+  const { addToast } = useToast()
 
   const getHeaders = () => {
     const headers = { 'Content-Type': 'application/json' }
@@ -49,6 +51,7 @@ function Dashboard() {
       })
       .catch(err => {
         setError(err.message)
+        addToast(err.message, 'error')
         setLoading(false)
       })
   }
@@ -79,9 +82,13 @@ function Dashboard() {
     })
     .then(() => {
       setNewUrl('')
+      addToast('Monitor added successfully', 'success')
       fetchMonitors()
     })
-    .catch(err => setError(err.message))
+    .catch(err => {
+        setError(err.message)
+        addToast(err.message, 'error')
+    })
   }
 
   const handleToggleActive = (monitor) => {
@@ -98,8 +105,9 @@ function Dashboard() {
         setMonitors(monitors.map(m => 
             m.id === monitor.id ? { ...m, isActive: !monitor.isActive } : m
         ))
+        addToast(`Monitor ${!monitor.isActive ? 'resumed' : 'paused'}`, 'success')
     })
-    .catch(err => setError(err.message))
+    .catch(err => addToast(err.message, 'error'))
   }
 
   const handleEditInterval = (monitor) => {
@@ -119,8 +127,9 @@ function Dashboard() {
         setMonitors(monitors.map(m => 
             m.id === monitor.id ? { ...m, checkIntervalMinutes: parseInt(newInterval) } : m
         ))
+        addToast('Check interval updated', 'success')
     })
-    .catch(err => setError(err.message))
+    .catch(err => addToast(err.message, 'error'))
   }
 
   const handleDeleteMonitor = (id) => {
@@ -139,8 +148,9 @@ function Dashboard() {
       })
       .then(() => {
         setMonitors(monitors.filter(m => m.id !== id))
+        addToast('Monitor deleted', 'success')
       })
-      .catch(err => setError(err.message))
+      .catch(err => addToast(err.message, 'error'))
   }
 
   // Filter monitors logic
@@ -244,8 +254,19 @@ function Dashboard() {
         <div className="bg-white dark:bg-slate-800 shadow overflow-hidden sm:rounded-md border border-slate-200 dark:border-slate-700">
           <ul role="list" className="divide-y divide-slate-200 dark:divide-slate-700">
             {filteredMonitors.length === 0 ? (
-              <li className="px-6 py-12 text-center text-slate-500 dark:text-slate-400 text-sm">
-                No monitors found matching your filters.
+              <li className="px-6 py-20 flex flex-col items-center justify-center text-center">
+                 <svg className="h-12 w-12 text-slate-300 dark:text-slate-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                 </svg>
+                 <h3 className="text-sm font-medium text-slate-900 dark:text-white">
+                    {monitors.length === 0 ? 'No monitors found' : 'No matching monitors'}
+                 </h3>
+                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                    {monitors.length === 0 
+                      ? 'Get started by adding a new URL to monitor above.' 
+                      : 'Try adjusting your search or filter criteria.'
+                    }
+                 </p>
               </li>
             ) : (
               filteredMonitors.map(monitor => (
