@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import API_BASE_URL from '../config'
 import Header from '../components/Header'
+import SummaryCards from '../components/SummaryCards'
 
 function Dashboard() {
   const [monitors, setMonitors] = useState([])
@@ -151,37 +152,41 @@ function Dashboard() {
         )}
 
       {token && (
-        <form onSubmit={handleAddMonitor} className="mb-8 bg-white dark:bg-slate-800 shadow sm:rounded-lg p-6 flex flex-col sm:flex-row gap-4 border border-slate-200 dark:border-slate-700">
-            <input 
-              type="url" 
-              name="url"
-              id="url"
-              placeholder="Enter URL to monitor (e.g. https://google.com)" 
-              value={newUrl} 
-              onChange={e => setNewUrl(e.target.value)}
-              required 
-              className="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border-0 text-slate-900 dark:text-slate-100 dark:bg-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-600 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
-            />
-            <div className="sm:w-32">
+        <>
+          <SummaryCards monitors={monitors} />
+          
+          <form onSubmit={handleAddMonitor} className="mb-8 bg-white dark:bg-slate-800 shadow sm:rounded-lg p-6 flex flex-col sm:flex-row gap-4 border border-slate-200 dark:border-slate-700">
               <input 
-                type="number" 
-                name="interval"
-                id="interval"
-                placeholder="Int (m)" 
-                value={interval} 
-                onChange={e => setInterval(e.target.value)}
-                min="1"
+                type="url" 
+                name="url"
+                id="url"
+                placeholder="Enter URL to monitor (e.g. https://google.com)" 
+                value={newUrl} 
+                onChange={e => setNewUrl(e.target.value)}
                 required 
-                className="block w-full px-3 py-2 rounded-md border-0 text-slate-900 dark:text-slate-100 dark:bg-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-600 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                className="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border-0 text-slate-900 dark:text-slate-100 dark:bg-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-600 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
               />
-            </div>
-            <button 
-              type="submit"
-              className="inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-            >
-              Add Monitor
-            </button>
-        </form>
+              <div className="sm:w-32">
+                <input 
+                  type="number" 
+                  name="interval"
+                  id="interval"
+                  placeholder="Int (m)" 
+                  value={interval} 
+                  onChange={e => setInterval(e.target.value)}
+                  min="1"
+                  required 
+                  className="block w-full px-3 py-2 rounded-md border-0 text-slate-900 dark:text-slate-100 dark:bg-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-600 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                />
+              </div>
+              <button 
+                type="submit"
+                className="inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+              >
+                Add Monitor
+              </button>
+          </form>
+        </>
       )}
       
       {loading && <p className="text-slate-600 dark:text-slate-400">Loading...</p>}
