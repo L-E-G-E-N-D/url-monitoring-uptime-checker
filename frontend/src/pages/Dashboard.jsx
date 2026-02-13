@@ -12,6 +12,10 @@ function Dashboard() {
   const [newUrl, setNewUrl] = useState('')
   const [interval, setInterval] = useState(15)
   
+  // Search & Filter State
+  const [searchQuery, setSearchQuery] = useState('')
+  const [filterStatus, setFilterStatus] = useState('all') // all, active, paused, down
+
   const { token } = useAuth()
 
   const getHeaders = () => {
@@ -139,6 +143,20 @@ function Dashboard() {
       .catch(err => setError(err.message))
   }
 
+  // Filter monitors logic
+  const filteredMonitors = monitors.filter(monitor => {
+    // Search Filter
+    const matchesSearch = monitor.url.toLowerCase().includes(searchQuery.toLowerCase())
+
+    // Status Filter
+    let matchesStatus = true
+    if (filterStatus === 'active') matchesStatus = monitor.isActive === true
+    if (filterStatus === 'paused') matchesStatus = monitor.isActive === false
+    if (filterStatus === 'down') matchesStatus = monitor.lastCheck?.status === 'DOWN'
+
+    return matchesSearch && matchesStatus
+  })
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
       <Header />
@@ -186,6 +204,36 @@ function Dashboard() {
                 Add Monitor
               </button>
           </form>
+
+          {/* Search & Filter Controls */}
+          <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div className="relative flex-1 w-full">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <svg className="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                placeholder="Search monitors..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="block w-full rounded-md border-0 py-2 pl-10 text-slate-900 dark:text-slate-100 dark:bg-slate-800 ring-1 ring-inset ring-slate-300 dark:ring-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+              />
+            </div>
+            <div className="w-full sm:w-48">
+              <select
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                className="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-slate-900 dark:text-slate-100 dark:bg-slate-800 ring-1 ring-inset ring-slate-300 dark:ring-slate-700 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+              >
+                <option value="all">All Monitors</option>
+                <option value="active">Active</option>
+                <option value="paused">Paused</option>
+                <option value="down">Down</option>
+              </select>
+            </div>
+          </div>
         </>
       )}
       
@@ -195,12 +243,12 @@ function Dashboard() {
       {!loading && !error && token && (
         <div className="bg-white dark:bg-slate-800 shadow overflow-hidden sm:rounded-md border border-slate-200 dark:border-slate-700">
           <ul role="list" className="divide-y divide-slate-200 dark:divide-slate-700">
-            {monitors.length === 0 ? (
+            {filteredMonitors.length === 0 ? (
               <li className="px-6 py-12 text-center text-slate-500 dark:text-slate-400 text-sm">
-                No monitors found. Add one above to start tracking.
+                No monitors found matching your filters.
               </li>
             ) : (
-              monitors.map(monitor => (
+              filteredMonitors.map(monitor => (
                 <li key={monitor.id} className="px-6 py-6 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150 ease-in-out">
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
