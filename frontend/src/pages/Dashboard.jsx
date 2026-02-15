@@ -4,6 +4,7 @@ import { useToast } from '../context/ToastContext'
 import API_BASE_URL from '../config'
 import Header from '../components/Header'
 import SummaryCards from '../components/SummaryCards'
+import RecentActivity from '../components/RecentActivity'
 
 function Dashboard() {
   const [monitors, setMonitors] = useState([])
@@ -182,6 +183,7 @@ function Dashboard() {
       {token && (
         <>
           <SummaryCards monitors={monitors} />
+          <RecentActivity monitors={monitors} />
           
           <form onSubmit={handleAddMonitor} className="mb-8 bg-white dark:bg-slate-800 shadow sm:rounded-lg p-6 flex flex-col sm:flex-row gap-4 border border-slate-200 dark:border-slate-700">
               <input 
