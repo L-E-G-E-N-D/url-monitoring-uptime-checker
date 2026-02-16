@@ -18,7 +18,7 @@ function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('all') // all, active, paused, down
 
-  const { token } = useAuth()
+  const { token, logout } = useAuth()
   const { addToast } = useToast()
 
   const getHeaders = () => {
@@ -29,6 +29,16 @@ function Dashboard() {
     return headers
   }
 
+  const handleAuthError = (res) => {
+    if (res.status === 401 || res.status === 403) {
+      logout()
+      throw new Error('Session expired. Please login again.')
+    }
+    return res.json().then(err => { 
+      throw new Error(err.error || err.message || `Error ${res.status}: ${res.statusText}`) 
+    })
+  }
+
   const fetchMonitors = () => {
     setLoading(true)
     const headers = {}
@@ -36,14 +46,7 @@ function Dashboard() {
 
     fetch(`${API_BASE_URL}/monitors`, { headers })
       .then(res => {
-        if (!res.ok) {
-          if (res.status === 401) throw new Error('Unauthorized - please login')
-          return res.json().then(err => { 
-            throw new Error(err.message || err.error || `Error ${res.status}: ${res.statusText}`) 
-          }).catch(e => {
-             throw new Error(`Error ${res.status}: ${res.statusText}`)
-          })
-        }
+        if (!res.ok) return handleAuthError(res)
         return res.json()
       })
       .then(data => {
@@ -75,10 +78,7 @@ function Dashboard() {
       body: JSON.stringify({ url: newUrl, checkIntervalMinutes: parseInt(interval) })
     })
     .then(res => {
-      if (!res.ok) {
-        if (res.status === 401) throw new Error('Unauthorized - please login')
-        return res.json().then(err => { throw new Error(err.message || 'Failed to create monitor') })
-      }
+      if (!res.ok) return handleAuthError(res)
       return res.json()
     })
     .then(() => {
@@ -99,7 +99,7 @@ function Dashboard() {
         body: JSON.stringify({ isActive: !monitor.isActive })
     })
     .then(res => {
-        if (!res.ok) throw new Error('Failed to update monitor')
+        if (!res.ok) return handleAuthError(res)
         return res.json()
     })
     .then(() => {
@@ -121,7 +121,7 @@ function Dashboard() {
         body: JSON.stringify({ checkIntervalMinutes: parseInt(newInterval) })
     })
     .then(res => {
-        if (!res.ok) throw new Error('Failed to update monitor')
+        if (!res.ok) return handleAuthError(res)
         return res.json()
     })
     .then(() => {
@@ -141,10 +141,7 @@ function Dashboard() {
         headers: getHeaders()
     })
       .then(res => {
-        if (!res.ok) {
-           if (res.status === 401) throw new Error('Unauthorized - please login')
-           throw new Error('Failed to delete monitor')
-        }
+        if (!res.ok) return handleAuthError(res)
         return res.json()
       })
       .then(() => {
