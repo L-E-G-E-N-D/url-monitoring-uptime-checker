@@ -34,7 +34,6 @@ const server = app.listen(PORT, async () => {
         console.log('Database schema initialized');
     } catch (err) {
         console.error('Failed to initialize database schema:', err);
-        // Don't exit, maybe it's just a connection blip, but let it be known
     }
 
     scheduler.startScheduler();
@@ -50,7 +49,7 @@ const gracefulShutdown = () => {
         });
     });
 
-    // Force close if it takes too long
+
     setTimeout(() => {
         console.error('Could not close connections in time, forcefully shutting down');
         process.exit(1);

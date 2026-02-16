@@ -1,21 +1,10 @@
 const db = require('../db');
 const checkService = require('./check.service');
 
-const CHECK_INTERVAL_MS = 60 * 1000; // Run the scheduler loop every 1 minute
-
-async function startScheduler() {
-    console.log('Starting monitoring scheduler...');
-
-    // Run immediately on start? Or wait? Let's run immediately then interval.
-    runChecks();
-
-    setInterval(runChecks, CHECK_INTERVAL_MS);
-}
+const CHECK_INTERVAL_MS = 60 * 1000;
 
 async function runChecks() {
     try {
-        // Find monitors that need checking
-        // Logic: active monitors where no check exists OR last check was >= interval ago
         const query = `
             SELECT m.*, u.email as user_email
             FROM monitors m
@@ -38,14 +27,20 @@ async function runChecks() {
         if (monitorsToCheck.length > 0) {
             console.log(`Scheduler: Found ${monitorsToCheck.length} monitors due for check.`);
 
-            // Execute checks in parallel (maybe limit concurrency if list is huge, but for now Promise.all is fine for MVP)
-            // Consider using map with no await inside, then Promise.allSettled
             const checkPromises = monitorsToCheck.map(monitor => checkService.performCheck(monitor));
             await Promise.allSettled(checkPromises);
         }
     } catch (error) {
         console.error('Scheduler error:', error);
     }
+}
+
+async function startScheduler() {
+    console.log('Starting monitoring scheduler...');
+
+    runChecks();
+
+    setInterval(runChecks, CHECK_INTERVAL_MS);
 }
 
 module.exports = {

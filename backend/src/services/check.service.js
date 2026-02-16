@@ -49,8 +49,6 @@ async function performCheck(monitor) {
         if (monitor.status !== status) {
             console.log(`[ALERT] Monitor ${monitor.url} changed from ${monitor.status || 'PENDING'} to ${status}`);
 
-
-
             await sendAlertEmail(
                 monitor.user_email,
                 monitor.url,

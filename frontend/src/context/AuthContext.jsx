@@ -12,12 +12,9 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check if token exists on mount
     const storedToken = localStorage.getItem('token')
     if (storedToken) {
       setToken(storedToken)
-      // Optional: Validate token with backend here if needed
-      // For now, we assume it's valid if present
       setUser({ token: storedToken }) 
     }
     setLoading(false)
