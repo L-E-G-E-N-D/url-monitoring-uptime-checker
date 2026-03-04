@@ -73,9 +73,25 @@ async function deleteMonitor(req, res) {
   res.json({ message: 'Monitor deleted' });
 }
 
+async function getMonitor(req, res) {
+  const userId = req.user.id;
+  const monitorId = req.params.id;
+
+  const monitor = await monitorService.getMonitorById(userId, monitorId);
+
+  if (!monitor) {
+    return res.status(404).json({
+      error: { message: 'Monitor not found' },
+    });
+  }
+
+  res.json(monitor);
+}
+
 module.exports = {
   createMonitor,
   getMonitors,
+  getMonitor,
   updateMonitor,
   deleteMonitor,
 };

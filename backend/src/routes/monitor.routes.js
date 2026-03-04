@@ -8,6 +8,7 @@ router.use(authenticateToken);
 
 router.post('/', controller.createMonitor);
 router.get('/', controller.getMonitors);
+router.get('/:id', controller.getMonitor);
 router.put('/:id', controller.updateMonitor);
 router.delete('/:id', controller.deleteMonitor);
 

@@ -102,9 +102,67 @@ async function deleteMonitor(userId, monitorId) {
   return result.rowCount > 0;
 }
 
+async function getMonitorById(userId, monitorId) {
+  const monitorResult = await db.query(
+    `
+    SELECT id, url, is_active, check_interval_minutes, created_at
+    FROM monitors
+    WHERE id = $1 AND user_id = $2
+    `,
+    [monitorId, userId]
+  );
+
+  if (monitorResult.rows.length === 0) {
+    return null;
+  }
+
+  const monitor = monitorResult.rows[0];
+
+  const checksResult = await db.query(
+    `
+    SELECT status, response_time_ms, checked_at
+    FROM monitor_checks
+    WHERE monitor_id = $1
+    ORDER BY checked_at DESC
+    LIMIT 20
+    `,
+    [monitorId]
+  );
+
+  const uptimeStatsResult = await db.query(
+    `
+    SELECT 
+      ROUND(
+        (COUNT(CASE WHEN status = 'UP' THEN 1 END)::DECIMAL / NULLIF(COUNT(*), 0)) * 100, 
+        1
+      ) as uptime_percent
+    FROM monitor_checks
+    WHERE monitor_id = $1
+    AND checked_at > NOW() - INTERVAL '24 hours'
+    `,
+    [monitorId]
+  );
+
+  return {
+    id: monitor.id,
+    url: monitor.url,
+    isActive: monitor.is_active,
+    checkIntervalMinutes: monitor.check_interval_minutes,
+    createdAt: monitor.created_at,
+    uptimePercent: uptimeStatsResult.rows[0] && uptimeStatsResult.rows[0].uptime_percent !== null
+      ? parseFloat(uptimeStatsResult.rows[0].uptime_percent) : null,
+    recentChecks: checksResult.rows.map(row => ({
+      status: row.status,
+      responseTime: row.response_time_ms,
+      checkedAt: row.checked_at
+    }))
+  };
+}
+
 module.exports = {
   createMonitor,
   getMonitorsByUser,
+  getMonitorById,
   updateMonitor,
   deleteMonitor,
 };

@@ -5,6 +5,7 @@ import API_BASE_URL from '../config'
 import Header from '../components/Header'
 import SummaryCards from '../components/SummaryCards'
 import RecentActivity from '../components/RecentActivity'
+import MonitorDetailsModal from '../components/MonitorDetailsModal'
 
 function Dashboard() {
   const [monitors, setMonitors] = useState([])
@@ -17,6 +18,9 @@ function Dashboard() {
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('all') // all, active, paused, down
+
+  // Modal State
+  const [selectedMonitorId, setSelectedMonitorId] = useState(null)
 
   const { token, logout } = useAuth()
   const { addToast } = useToast()
@@ -92,7 +96,8 @@ function Dashboard() {
     })
   }
 
-  const handleToggleActive = (monitor) => {
+  const handleToggleActive = (e, monitor) => {
+    e.stopPropagation()
     fetch(`${API_BASE_URL}/monitors/${monitor.id}`, {
         method: 'PUT',
         headers: getHeaders(),
@@ -111,7 +116,8 @@ function Dashboard() {
     .catch(err => addToast(err.message, 'error'))
   }
 
-  const handleEditInterval = (monitor) => {
+  const handleEditInterval = (e, monitor) => {
+    e.stopPropagation()
     const newInterval = prompt('Enter new check interval in minutes:', monitor.checkIntervalMinutes)
     if (!newInterval || isNaN(newInterval) || newInterval < 1) return
 
@@ -133,7 +139,8 @@ function Dashboard() {
     .catch(err => addToast(err.message, 'error'))
   }
 
-  const handleDeleteMonitor = (id) => {
+  const handleDeleteMonitor = (e, id) => {
+    e.stopPropagation()
     if (!confirm('Are you sure you want to delete this monitor?')) return
 
     fetch(`${API_BASE_URL}/monitors/${id}`, { 
@@ -147,6 +154,7 @@ function Dashboard() {
       .then(() => {
         setMonitors(monitors.filter(m => m.id !== id))
         addToast('Monitor deleted', 'success')
+        if (selectedMonitorId === id) setSelectedMonitorId(null)
       })
       .catch(err => addToast(err.message, 'error'))
   }
@@ -269,7 +277,11 @@ function Dashboard() {
               </li>
             ) : (
               filteredMonitors.map(monitor => (
-                <li key={monitor.id} className="px-6 py-6 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150 ease-in-out">
+                <li 
+                  key={monitor.id} 
+                  className="px-6 py-6 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150 ease-in-out cursor-pointer"
+                  onClick={() => setSelectedMonitorId(monitor.id)}
+                >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-1">
@@ -311,19 +323,19 @@ function Dashboard() {
                     </div>
                     <div className="flex items-center gap-3 ml-4">
                       <button 
-                          onClick={() => handleToggleActive(monitor)}
+                          onClick={(e) => handleToggleActive(e, monitor)}
                           className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-1.5 rounded-md border border-transparent transition-colors"
                       >
                           {monitor.isActive ? 'Pause' : 'Resume'}
                       </button>
                       <button 
-                          onClick={() => handleEditInterval(monitor)}
+                          onClick={(e) => handleEditInterval(e, monitor)}
                           className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-500 dark:hover:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50 px-3 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 transition-colors"
                       >
                           Edit
                       </button>
                       <button 
-                          onClick={() => handleDeleteMonitor(monitor.id)} 
+                          onClick={(e) => handleDeleteMonitor(e, monitor.id)} 
                           className="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 rounded-md border border-transparent transition-colors"
                       >
                           Delete
@@ -337,6 +349,13 @@ function Dashboard() {
         </div>
       )}
       </main>
+
+      {selectedMonitorId && (
+        <MonitorDetailsModal 
+          monitorId={selectedMonitorId} 
+          onClose={() => setSelectedMonitorId(null)} 
+        />
+      )}
     </div>
   )
 }
