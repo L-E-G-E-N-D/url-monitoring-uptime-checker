@@ -46,6 +46,12 @@ async function performCheck(monitor, region = 'india') {
             [monitor.id, status, responseTime, statusCode, region]
         );
 
+        await db.query(
+            `INSERT INTO monitor_history (monitor_id, status, latency_ms, region, checked_at)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [monitor.id, status, responseTime, region, new Date(endTime)]
+        );
+
         console.log(`Check result: ${monitor.url} [${region}] ${status} ${responseTime}ms`)
 
         if (monitor.status !== status) {

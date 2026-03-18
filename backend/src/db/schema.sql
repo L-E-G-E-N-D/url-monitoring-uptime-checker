@@ -28,12 +28,27 @@ CREATE TABLE IF NOT EXISTS monitor_checks (
 ALTER TABLE monitor_checks
 ADD COLUMN IF NOT EXISTS region TEXT DEFAULT 'india';
 
+CREATE TABLE IF NOT EXISTS monitor_history (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  monitor_id UUID NOT NULL REFERENCES monitors(id) ON DELETE CASCADE,
+  status TEXT NOT NULL CHECK (status IN ('UP', 'DOWN')),
+  latency_ms INT,
+  region TEXT DEFAULT 'india',
+  checked_at TIMESTAMPTZ DEFAULT now()
+);
+
 
 CREATE INDEX IF NOT EXISTS idx_monitor_checks_monitor_id
 ON monitor_checks (monitor_id);
 
 CREATE INDEX IF NOT EXISTS idx_monitor_checks_checked_at
 ON monitor_checks (checked_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_monitor_history_monitor_id
+ON monitor_history (monitor_id);
+
+CREATE INDEX IF NOT EXISTS idx_monitor_history_checked_at
+ON monitor_history (checked_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_monitors_is_active
 ON monitors (is_active);
