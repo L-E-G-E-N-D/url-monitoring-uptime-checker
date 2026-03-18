@@ -32,11 +32,13 @@ const server = app.listen(PORT, async () => {
         const schemaSql = fs.readFileSync(schemaPath, 'utf8');
         await db.query(schemaSql);
         console.log('Database schema initialized');
+        scheduler.startScheduler();
     } catch (err) {
         console.error('Failed to initialize database schema:', err);
+        server.close(() => {
+            db.close().finally(() => process.exit(1));
+        });
     }
-
-    scheduler.startScheduler();
 });
 
 const gracefulShutdown = () => {
