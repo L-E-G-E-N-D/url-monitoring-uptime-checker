@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import API_BASE_URL from '../config'
+import { parseApiError } from '../utils/http'
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -21,7 +22,7 @@ function Login() {
     })
     .then(res => {
       if (!res.ok) {
-        return res.json().then(err => { throw new Error(err.error || 'Login failed') })
+        return parseApiError(res, 'Login failed').then(msg => { throw new Error(msg) })
       }
       return res.json()
     })

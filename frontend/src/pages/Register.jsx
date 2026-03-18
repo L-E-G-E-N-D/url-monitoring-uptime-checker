@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import API_BASE_URL from '../config'
+import { parseApiError } from '../utils/http'
 
 function Register() {
   const [name, setName] = useState('')
@@ -26,7 +27,7 @@ function Register() {
     })
     .then(res => {
       if (!res.ok) {
-        return res.json().then(err => { throw new Error(err.error || 'Registration failed') })
+        return parseApiError(res, 'Registration failed').then(msg => { throw new Error(msg) })
       }
       return res.json()
     })

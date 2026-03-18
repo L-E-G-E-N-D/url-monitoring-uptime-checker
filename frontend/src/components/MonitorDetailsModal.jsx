@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import API_BASE_URL from '../config';
 import { useAuth } from '../context/AuthContext';
+import { parseApiError } from '../utils/http'
 
 function MonitorDetailsModal({ monitorId, onClose }) {
   const [monitor, setMonitor] = useState(null);
@@ -23,8 +24,8 @@ function MonitorDetailsModal({ monitorId, onClose }) {
              logout();
              throw new Error('Session expired. Please login again.');
            }
-           const errData = await response.json().catch(() => ({}));
-           throw new Error(errData.error?.message || errData.message || 'Failed to load details');
+           const msg = await parseApiError(response, 'Failed to load details')
+           throw new Error(msg)
         }
 
         const data = await response.json();

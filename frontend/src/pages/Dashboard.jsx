@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import API_BASE_URL from '../config'
+import { parseApiError } from '../utils/http'
 import Header from '../components/Header'
 import SummaryCards from '../components/SummaryCards'
 import RecentActivity from '../components/RecentActivity'
@@ -38,8 +39,8 @@ function Dashboard() {
       logout()
       throw new Error('Session expired. Please login again.')
     }
-    return res.json().then(err => { 
-      throw new Error(err.error || err.message || `Error ${res.status}: ${res.statusText}`) 
+    return parseApiError(res, `Error ${res.status}: ${res.statusText}`).then(msg => {
+      throw new Error(msg)
     })
   }
 
