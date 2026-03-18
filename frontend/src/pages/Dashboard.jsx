@@ -7,6 +7,15 @@ import Header from '../components/Header'
 import SummaryCards from '../components/SummaryCards'
 import RecentActivity from '../components/RecentActivity'
 import MonitorDetailsModal from '../components/MonitorDetailsModal'
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip
+} from 'recharts'
 
 function Dashboard() {
   const [monitors, setMonitors] = useState([])
@@ -22,6 +31,10 @@ function Dashboard() {
 
   // Modal State
   const [selectedMonitorId, setSelectedMonitorId] = useState(null)
+  const [selectedAnalyticsMonitorId, setSelectedAnalyticsMonitorId] = useState('')
+  const [analyticsData, setAnalyticsData] = useState(null)
+  const [analyticsLoading, setAnalyticsLoading] = useState(false)
+  const [analyticsError, setAnalyticsError] = useState(null)
 
   const { token, logout } = useAuth()
   const { addToast } = useToast()
@@ -72,6 +85,43 @@ function Dashboard() {
         setLoading(false)
     }
   }, [token])
+
+  useEffect(() => {
+    if (!monitors.length) {
+      setSelectedAnalyticsMonitorId('')
+      setAnalyticsData(null)
+      return
+    }
+
+    const selectedStillExists = monitors.some(m => m.id === selectedAnalyticsMonitorId)
+    if (!selectedAnalyticsMonitorId || !selectedStillExists) {
+      setSelectedAnalyticsMonitorId(monitors[0].id)
+    }
+  }, [monitors, selectedAnalyticsMonitorId])
+
+  useEffect(() => {
+    if (!token || !selectedAnalyticsMonitorId) return
+
+    setAnalyticsLoading(true)
+    setAnalyticsError(null)
+
+    const headers = {}
+    if (token) headers['Authorization'] = `Bearer ${token}`
+
+    fetch(`${API_BASE_URL}/analytics/${selectedAnalyticsMonitorId}`, { headers })
+      .then(res => {
+        if (!res.ok) return handleAuthError(res)
+        return res.json()
+      })
+      .then(data => {
+        setAnalyticsData(data)
+        setAnalyticsLoading(false)
+      })
+      .catch(err => {
+        setAnalyticsError(err.message)
+        setAnalyticsLoading(false)
+      })
+  }, [selectedAnalyticsMonitorId, token])
 
   const handleAddMonitor = (e) => {
     e.preventDefault()
@@ -174,6 +224,15 @@ function Dashboard() {
     return matchesSearch && matchesStatus
   })
 
+  const chartData = (analyticsData?.last20Records || [])
+    .slice()
+    .reverse()
+    .map((record, index) => ({
+      name: `${index + 1}`,
+      latency: record.latency,
+      uptime: record.status === 'UP' ? 100 : 0
+    }))
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
       <Header />
@@ -190,6 +249,73 @@ function Dashboard() {
         <>
           <SummaryCards monitors={monitors} />
           <RecentActivity monitors={monitors} />
+
+          <div className="mb-8 bg-white dark:bg-slate-800 shadow sm:rounded-lg border border-slate-200 dark:border-slate-700 p-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Analytics</h2>
+              <select
+                value={selectedAnalyticsMonitorId}
+                onChange={(e) => setSelectedAnalyticsMonitorId(e.target.value)}
+                className="w-full sm:w-80 rounded-md border-0 py-2 pl-3 pr-10 text-slate-900 dark:text-slate-100 dark:bg-slate-900 ring-1 ring-inset ring-slate-300 dark:ring-slate-600 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
+              >
+                {monitors.map((monitor) => (
+                  <option key={monitor.id} value={monitor.id}>
+                    {monitor.url}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {analyticsLoading && <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Loading analytics...</p>}
+            {analyticsError && <p className="text-sm text-red-600 dark:text-red-400 mb-3">{analyticsError}</p>}
+
+            {!analyticsLoading && analyticsData && (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+                  <div className="rounded-md border border-slate-200 dark:border-slate-700 p-3">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Uptime</p>
+                    <p className="text-xl font-semibold text-slate-900 dark:text-white">{analyticsData.uptimePercentage}%</p>
+                  </div>
+                  <div className="rounded-md border border-slate-200 dark:border-slate-700 p-3">
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Avg Latency</p>
+                    <p className="text-xl font-semibold text-slate-900 dark:text-white">{analyticsData.avgLatency}ms</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                  <div className="rounded-md border border-slate-200 dark:border-slate-700 p-3">
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Uptime Trend</p>
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={chartData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" />
+                          <XAxis dataKey="name" />
+                          <YAxis domain={[0, 100]} />
+                          <Tooltip />
+                          <Line type="monotone" dataKey="uptime" stroke="#16a34a" strokeWidth={2} dot={false} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+
+                  <div className="rounded-md border border-slate-200 dark:border-slate-700 p-3">
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Latency Trend</p>
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={chartData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip />
+                          <Line type="monotone" dataKey="latency" stroke="#2563eb" strokeWidth={2} dot={false} />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
           
           <form onSubmit={handleAddMonitor} className="mb-8 bg-white dark:bg-slate-800 shadow sm:rounded-lg p-6 flex flex-col sm:flex-row gap-4 border border-slate-200 dark:border-slate-700">
               <input 
