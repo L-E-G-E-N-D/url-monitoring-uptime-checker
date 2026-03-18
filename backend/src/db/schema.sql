@@ -21,8 +21,12 @@ CREATE TABLE IF NOT EXISTS monitor_checks (
   status TEXT NOT NULL CHECK (status IN ('UP', 'DOWN')),
   response_time_ms INT,
   http_status_code INT,
+  region TEXT DEFAULT 'india',
   checked_at TIMESTAMPTZ DEFAULT now()
 );
+
+ALTER TABLE monitor_checks
+ADD COLUMN IF NOT EXISTS region TEXT DEFAULT 'india';
 
 
 CREATE INDEX IF NOT EXISTS idx_monitor_checks_monitor_id

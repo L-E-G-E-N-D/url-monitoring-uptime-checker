@@ -1,5 +1,6 @@
 const db = require('../db')
 const checkService = require('./check.service')
+const regions = ['india', 'us', 'europe']
 
 async function runDueChecks() {
   try {
@@ -24,7 +25,15 @@ async function runDueChecks() {
 
     if (monitorsToCheck.length) {
       console.log(`Scheduler: Found ${monitorsToCheck.length} monitors due for check.`)
-      const checkPromises = monitorsToCheck.map((monitor) => checkService.performCheck(monitor))
+      const checkPromises = []
+
+      for (const monitor of monitorsToCheck) {
+        for (const region of regions) {
+          console.log(`Scheduler: checking ${monitor.url} from ${region}`)
+          checkPromises.push(checkService.performCheck(monitor, region))
+        }
+      }
+
       await Promise.allSettled(checkPromises)
     } else {
       console.log('Scheduler: no monitors due.')
@@ -37,4 +46,3 @@ async function runDueChecks() {
 module.exports = {
   runDueChecks,
 }
-

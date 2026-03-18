@@ -2,7 +2,7 @@ const axios = require('axios');
 const db = require('../db');
 const { sendAlertEmail } = require('./alert.service');
 
-async function performCheck(monitor) {
+async function performCheck(monitor, region = 'india') {
     const startTime = Date.now();
     let endTime = startTime;
     let status = 'DOWN';
@@ -41,10 +41,12 @@ async function performCheck(monitor) {
 
     try {
         await db.query(
-            `INSERT INTO monitor_checks (monitor_id, status, response_time_ms, http_status_code)
-             VALUES ($1, $2, $3, $4)`,
-            [monitor.id, status, responseTime, statusCode]
+            `INSERT INTO monitor_checks (monitor_id, status, response_time_ms, http_status_code, region)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [monitor.id, status, responseTime, statusCode, region]
         );
+
+        console.log(`Check result: ${monitor.url} [${region}] ${status} ${responseTime}ms`)
 
         if (monitor.status !== status) {
             console.log(`[ALERT] Monitor ${monitor.url} changed from ${monitor.status || 'PENDING'} to ${status}`);
