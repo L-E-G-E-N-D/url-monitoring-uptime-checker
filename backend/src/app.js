@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const monitorRoutes = require('./routes/monitor.routes');
 const authRoutes = require('./routes/auth.routes');
+const analyticsRoutes = require('./routes/analytics.routes');
 
 const app = express();
 
@@ -30,5 +31,6 @@ app.get('/health', (req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/monitors', monitorRoutes);
+app.use('/analytics', analyticsRoutes);
 
 module.exports = app;
