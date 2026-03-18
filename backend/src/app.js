@@ -6,9 +6,15 @@ const analyticsRoutes = require('./routes/analytics.routes');
 
 const app = express();
 
+const envOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map(origin => origin.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://url-monitoring-uptime-checker.vercel.app'
+  'https://url-monitoring-uptime-checker.vercel.app',
+  ...envOrigins
 ];
 
 app.use(cors({
@@ -16,7 +22,8 @@ app.use(cors({
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true)
     } else {
-      callback(new Error('Not allowed by CORS'))
+      console.log(`Blocked CORS origin: ${origin}`)
+      callback(null, false)
     }
   },
   credentials: true,
