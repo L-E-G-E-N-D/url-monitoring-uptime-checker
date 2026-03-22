@@ -13,6 +13,7 @@ const envOrigins = (process.env.ALLOWED_ORIGINS || '')
 
 const allowedOrigins = [
   'http://localhost:5173',
+  'http://localhost:5174',
   'https://url-monitoring-uptime-checker.vercel.app',
   ...envOrigins
 ];
