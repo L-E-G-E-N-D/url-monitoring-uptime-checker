@@ -39,6 +39,6 @@ app.get('/health', (req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/monitors', monitorRoutes);
-app.use('/analytics', analyticsRoutes);
+app.use('/stats', analyticsRoutes);
 
 module.exports = app;

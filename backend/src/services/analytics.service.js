@@ -41,10 +41,11 @@ async function getAnalyticsByMonitor(userId, monitorId) {
   const totalChecks = summary.total_checks || 0;
   const upChecks = summary.up_checks || 0;
   const uptimePercentage = totalChecks > 0 ? Number(((upChecks / totalChecks) * 100).toFixed(2)) : 0;
+  const avgLatency = summary.avg_latency !== null ? parseFloat(summary.avg_latency) : 0;
 
   return {
     uptimePercentage,
-    avgLatency: summary.avg_latency ? Number(summary.avg_latency.toFixed(2)) : 0,
+    avgLatency: Number(avgLatency.toFixed(2)),
     last20Records: historyResult.rows.map((row) => ({
       status: row.status,
       latency: row.latency_ms,

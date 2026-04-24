@@ -1,18 +1,27 @@
 const analyticsService = require('../services/analytics.service');
 
 async function getAnalytics(req, res) {
-  const userId = req.user.id;
-  const websiteId = req.params.websiteId;
+  try {
+    const userId = req.user.id;
+    const websiteId = req.params.websiteId;
 
-  const analytics = await analyticsService.getAnalyticsByMonitor(userId, websiteId);
+    console.log(`Fetching analytics for monitor ${websiteId} and user ${userId}`);
 
-  if (!analytics) {
-    return res.status(404).json({
-      error: { message: 'Website not found' }
+    const analytics = await analyticsService.getAnalyticsByMonitor(userId, websiteId);
+
+    if (!analytics) {
+      return res.status(404).json({
+        error: { message: 'Website not found or access denied' }
+      });
+    }
+
+    res.json(analytics);
+  } catch (err) {
+    console.error('Analytics Fetch Error:', err);
+    res.status(500).json({
+      error: { message: 'Internal server error while fetching analytics' }
     });
   }
-
-  res.json(analytics);
 }
 
 module.exports = {

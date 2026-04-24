@@ -48,16 +48,18 @@ async function login(email, password) {
         return null;
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
-        expiresIn: '1h',
-    });
+    const token = jwt.sign(
+        { id: user.id, email: user.email, name: user.name, picture: user.picture }, 
+        JWT_SECRET, 
+        { expiresIn: '1h' }
+    );
 
-    return { user: { id: user.id, email: user.email }, token };
+    return { user: { id: user.id, email: user.email, name: user.name, picture: user.picture }, token };
 }
 
 async function googleLogin(accessToken) {
     const response = await axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`);
-    const { email, name, sub: googleId } = response.data;
+    const { email, name, picture, sub: googleId } = response.data;
 
     if (!email) {
         throw new Error('Could not retrieve email from Google');
@@ -69,15 +71,21 @@ async function googleLogin(accessToken) {
     if (!user) {
         // Create user if they don't exist
         const result = await db.query(
-            'INSERT INTO users (email, password_hash, name) VALUES ($1, $2, $3) RETURNING id, email, name, created_at',
-            [email, 'GOOGLE_AUTH', name]
+            'INSERT INTO users (email, password_hash, name, picture) VALUES ($1, $2, $3, $4) RETURNING id, email, name, picture, created_at',
+            [email, 'GOOGLE_AUTH', name, picture]
         );
         user = result.rows[0];
+    } else if (picture && user.picture !== picture) {
+        // Update picture if it changed
+        await db.query('UPDATE users SET picture = $1 WHERE id = $2', [picture, user.id]);
+        user.picture = picture;
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email, name: user.name }, JWT_SECRET, {
-        expiresIn: '1h',
-    });
+    const token = jwt.sign(
+        { id: user.id, email: user.email, name: user.name, picture: user.picture }, 
+        JWT_SECRET, 
+        { expiresIn: '1h' }
+    );
 
     return { user, token };
 }

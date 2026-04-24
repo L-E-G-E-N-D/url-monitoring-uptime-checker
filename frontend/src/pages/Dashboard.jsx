@@ -108,7 +108,7 @@ function Dashboard() {
     const headers = {}
     if (token) headers['Authorization'] = `Bearer ${token}`
 
-    fetch(`${API_BASE_URL}/analytics/${selectedAnalyticsMonitorId}`, { headers })
+    fetch(`${API_BASE_URL}/stats/${selectedAnalyticsMonitorId}`, { headers })
       .then(res => {
         if (!res.ok) return handleAuthError(res)
         return res.json()
@@ -118,7 +118,8 @@ function Dashboard() {
         setAnalyticsLoading(false)
       })
       .catch(err => {
-        setAnalyticsError(err.message)
+        console.error('Dashboard Analytics Fetch Error:', err)
+        setAnalyticsError(`Analytics Error: ${err.message}`)
         setAnalyticsLoading(false)
       })
   }, [selectedAnalyticsMonitorId, token])
