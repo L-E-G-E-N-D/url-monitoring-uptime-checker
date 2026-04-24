@@ -22,7 +22,7 @@ export default function Hero({ onOpenAuth }) {
               onClick={onOpenAuth}
               className="px-10 py-4 text-lg font-semibold text-black bg-gradient-to-r from-[#ccff00] to-[#e6ff00] rounded-full hover:brightness-110 transition-all cursor-pointer shadow-[0_0_20px_rgba(204,255,0,0.3)]"
             >
-              Launch app
+              Get Started
             </button>
           </div>
         </div>

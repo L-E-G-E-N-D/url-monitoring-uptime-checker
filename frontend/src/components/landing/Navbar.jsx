@@ -27,7 +27,7 @@ export default function Navbar({ onOpenAuth }) {
             onClick={onOpenAuth}
             className="px-6 py-2.5 text-[15px] font-semibold text-black bg-white rounded-full hover:bg-slate-200 transition-colors cursor-pointer"
           >
-            Launch app
+            Sign In
           </button>
         </div>
       </div>
