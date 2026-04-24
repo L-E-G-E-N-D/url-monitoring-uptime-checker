@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
 import { useGoogleLogin } from '@react-oauth/google';
+import API_BASE_URL from '../../config';
 
 export default function AuthModal({ onClose, initialMode = 'login' }) {
   const [isLogin, setIsLogin] = useState(initialMode === 'login');
@@ -21,8 +22,7 @@ export default function AuthModal({ onClose, initialMode = 'login' }) {
 
     try {
       const endpoint = isLogin ? '/auth/login' : '/auth/register';
-      const apiUrl = import.meta.env.VITE_API_URL || '/api';
-      const url = `${apiUrl.replace(/\/$/, '')}${endpoint}`;
+      const url = `${API_BASE_URL.replace(/\/$/, '')}${endpoint}`;
 
       const res = await fetch(url, {
         method: 'POST',
@@ -51,8 +51,7 @@ export default function AuthModal({ onClose, initialMode = 'login' }) {
     onSuccess: async (tokenResponse) => {
       setIsLoading(true);
       try {
-        const apiUrl = import.meta.env.VITE_API_URL || '/api';
-        const url = `${apiUrl.replace(/\/$/, '')}/auth/google`;
+        const url = `${API_BASE_URL.replace(/\/$/, '')}/auth/google`;
 
         const res = await fetch(url, {
           method: 'POST',
