@@ -7,7 +7,6 @@ function Scene() {
   const cubeRef = useRef()
 
   useFrame((state, delta) => {
-    // state.clock is internal to r3f, so we'll just use the elapsed time from it
     const time = state.clock.elapsedTime
     if (cubeRef.current) {
       cubeRef.current.rotation.x += delta * 0.5

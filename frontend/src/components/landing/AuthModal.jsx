@@ -52,6 +52,7 @@ export default function AuthModal({ onClose, initialMode = 'login' }) {
       setIsLoading(true);
       try {
         const url = `${API_BASE_URL.replace(/\/$/, '')}/auth/google`;
+        console.log('Attempting Google Auth fetch to:', url);
 
         const res = await fetch(url, {
           method: 'POST',
