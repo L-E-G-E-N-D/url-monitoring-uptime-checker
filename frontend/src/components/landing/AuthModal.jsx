@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
+import { useGoogleLogin } from '@react-oauth/google';
 
 export default function AuthModal({ onClose, initialMode = 'login' }) {
   const [isLogin, setIsLogin] = useState(initialMode === 'login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
   const navigate = useNavigate();
-  const { showToast } = useToast();
+  const { addToast } = useToast();
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
@@ -25,7 +27,7 @@ export default function AuthModal({ onClose, initialMode = 'login' }) {
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, name: isLogin ? undefined : name })
       });
 
       const data = await res.json();
@@ -35,19 +37,47 @@ export default function AuthModal({ onClose, initialMode = 'login' }) {
       }
 
       login(data.token);
-      showToast(isLogin ? 'Successfully logged in' : 'Successfully registered', 'success');
-      onClose();
+      addToast(isLogin ? 'Successfully logged in' : 'Successfully registered', 'success');
       navigate('/dashboard');
+      onClose();
     } catch (err) {
-      showToast(err.message, 'error');
+      addToast(err.message, 'error');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleGoogleSignIn = () => {
-    showToast('Google Sign In is not yet configured on the backend.', 'error');
-  };
+  const handleGoogleSignIn = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setIsLoading(true);
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || '/api';
+        const url = `${apiUrl.replace(/\/$/, '')}/auth/google`;
+
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: tokenResponse.access_token })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Google authentication failed');
+        }
+
+        login(data.token);
+        addToast('Successfully signed in with Google', 'success');
+        navigate('/dashboard');
+        onClose();
+      } catch (err) {
+        addToast(err.message, 'error');
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    onError: () => addToast('Google Login Failed', 'error')
+  });
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -80,6 +110,19 @@ export default function AuthModal({ onClose, initialMode = 'login' }) {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1.5">Full Name</label>
+                <input 
+                  type="text" 
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+                  placeholder="John Doe"
+                />
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1.5">Email address</label>
               <input 
@@ -124,6 +167,7 @@ export default function AuthModal({ onClose, initialMode = 'login' }) {
           </div>
 
           <button 
+            type="button"
             onClick={handleGoogleSignIn}
             className="w-full mt-6 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-medium rounded-xl px-4 py-3 transition-all flex justify-center items-center gap-3 cursor-pointer"
           >
@@ -139,6 +183,7 @@ export default function AuthModal({ onClose, initialMode = 'login' }) {
           <div className="mt-6 text-center text-sm text-slate-400">
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button 
+              type="button"
               onClick={() => setIsLogin(!isLogin)}
               className="text-purple-400 hover:text-purple-300 font-medium cursor-pointer"
             >
