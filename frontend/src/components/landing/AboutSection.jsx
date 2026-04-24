@@ -10,10 +10,10 @@ export default function AboutSection() {
           
           <div className="max-w-3xl">
             <h2 className="text-3xl md:text-5xl font-bold text-white mb-8">
-              Our Mission
+              My Mission
             </h2>
             <p className="text-xl text-slate-300 leading-relaxed mb-8">
-              Monitorly was built with a simple premise: developer-first monitoring that works as hard as you do. We believe that maintaining high availability shouldn't be a luxury or a manual chore.
+              I built Monitorly with a simple premise: developer-first monitoring that works as hard as you do. I believe that maintaining high availability shouldn't be a luxury or a manual chore.
             </p>
             <p className="text-lg text-slate-400 leading-relaxed mb-12">
               Our platform empowers engineers to focus on building great products while we handle the continuous health checks, performance tracking, and uptime preservation. By bridging the gap between free-tier hosting and enterprise-grade reliability, we ensure that every project—big or small—stays responsive and accessible.

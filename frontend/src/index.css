@@ -4,13 +4,22 @@
 
 @theme {
   --animate-spin-3d: spin3d 20s linear infinite;
+  --animate-spin-slow: spin 10s linear infinite;
+  --animate-float-slow: float 6s ease-in-out infinite;
+  --animate-float-delayed: float 6s ease-in-out infinite 3s;
 
   @keyframes spin3d {
     0% {
       transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg);
     }
+
     100% {
       transform: rotateX(360deg) rotateY(360deg) rotateZ(180deg);
     }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(var(--tw-rotate, 0deg)); }
+    50% { transform: translateY(-20px) rotate(var(--tw-rotate, 0deg)); }
   }
 }
