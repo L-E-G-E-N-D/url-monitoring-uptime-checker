@@ -45,20 +45,22 @@ function MonitorDetailsModal({ monitorId, onClose }) {
   if (!monitorId) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 dark:bg-slate-900/80 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={onClose}>
       <div 
-        className="bg-white dark:bg-slate-800 rounded-lg shadow-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto flex flex-col"
+        className="bg-[#0a0a0f] rounded-3xl shadow-[0_0_50px_rgba(147,51,234,0.15)] border border-white/10 max-w-2xl w-full max-h-[90vh] overflow-y-auto flex flex-col relative"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
-          <h2 className="text-xl font-semibold text-slate-900 dark:text-white truncate pr-4">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-blue-500" />
+        
+        <div className="flex items-center justify-between p-6 border-b border-white/10">
+          <h2 className="text-xl font-bold text-white truncate pr-4">
             {monitor?.url || 'Monitor Details'}
           </h2>
           <button 
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-500 dark:hover:text-slate-300 transition-colors"
+            className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -76,57 +78,57 @@ function MonitorDetailsModal({ monitorId, onClose }) {
           ) : monitor ? (
             <div className="space-y-8">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
-                  <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">Status</div>
-                  <div className="font-medium text-slate-900 dark:text-white flex items-center gap-2">
-                     <span className={`w-2 h-2 rounded-full ${monitor.recentChecks?.[0]?.status === 'UP' ? 'bg-green-500' : monitor.recentChecks?.[0]?.status === 'DOWN' ? 'bg-red-500' : 'bg-slate-400'}`}></span>
+                <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+                  <div className="text-sm text-slate-400 mb-1">Status</div>
+                  <div className="font-medium text-white flex items-center gap-2">
+                     <span className={`w-2 h-2 rounded-full ${monitor.recentChecks?.[0]?.status === 'UP' ? 'bg-[#ccff00]' : monitor.recentChecks?.[0]?.status === 'DOWN' ? 'bg-red-500' : 'bg-slate-400'}`}></span>
                      {monitor.recentChecks?.[0]?.status || 'PENDING'}
                   </div>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
-                  <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">Uptime (24h)</div>
-                  <div className="font-medium text-slate-900 dark:text-white">
+                <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+                  <div className="text-sm text-slate-400 mb-1">Uptime (24h)</div>
+                  <div className="font-medium text-white">
                     {monitor.uptimePercent !== null ? `${monitor.uptimePercent}%` : 'N/A'}
                   </div>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
-                  <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">Interval</div>
-                  <div className="font-medium text-slate-900 dark:text-white">{monitor.checkIntervalMinutes}m</div>
+                <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+                  <div className="text-sm text-slate-400 mb-1">Interval</div>
+                  <div className="font-medium text-white">{monitor.checkIntervalMinutes}m</div>
                 </div>
-                <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
-                  <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">State</div>
-                  <div className="font-medium text-slate-900 dark:text-white">{monitor.isActive ? 'Active' : 'Paused'}</div>
+                <div className="bg-white/5 border border-white/10 p-4 rounded-xl">
+                  <div className="text-sm text-slate-400 mb-1">State</div>
+                  <div className="font-medium text-white">{monitor.isActive ? 'Active' : 'Paused'}</div>
                 </div>
               </div>
 
               <div>
-                <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-4">Recent Checks</h3>
+                <h3 className="text-lg font-medium text-white mb-4">Recent Checks</h3>
                 {monitor.recentChecks && monitor.recentChecks.length > 0 ? (
-                  <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
-                    <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                      <thead className="bg-slate-50 dark:bg-slate-800/50">
+                  <div className="overflow-x-auto rounded-xl border border-white/10">
+                    <table className="min-w-full divide-y divide-white/10">
+                      <thead className="bg-white/5">
                         <tr>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Response Time</th>
-                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Time</th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Response Time</th>
+                          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Time</th>
                         </tr>
                       </thead>
-                      <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+                      <tbody className="bg-transparent divide-y divide-white/10">
                         {monitor.recentChecks.map((check, idx) => (
-                          <tr key={idx}>
+                          <tr key={idx} className="hover:bg-white/5 transition-colors">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  check.status === 'UP' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
-                                  check.status === 'DOWN' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300' :
-                                  'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300'
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+                                  check.status === 'UP' ? 'bg-[#ccff00]/10 text-[#ccff00] border-[#ccff00]/20' :
+                                  check.status === 'DOWN' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                  'bg-white/5 text-slate-300 border-white/10'
                                 }`}>
                                 {check.status}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-300">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                               {check.responseTime}ms
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 dark:text-slate-300">
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
                               {new Date(check.checkedAt).toLocaleString()}
                             </td>
                           </tr>
@@ -135,7 +137,7 @@ function MonitorDetailsModal({ monitorId, onClose }) {
                     </table>
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-500 dark:text-slate-400">No checks recorded yet.</p>
+                  <p className="text-sm text-slate-400">No checks recorded yet.</p>
                 )}
               </div>
             </div>

@@ -13,10 +13,10 @@ function SummaryCards({ monitors }) {
     : '0.0'
 
   const cards = [
-    { label: 'Total Monitors', value: total, textColor: 'text-slate-900 dark:text-white' },
-    { label: 'Active', value: active, textColor: 'text-blue-600 dark:text-blue-400' },
-    { label: 'Down', value: down, textColor: 'text-red-600 dark:text-red-400' },
-    { label: 'Avg Uptime (24h)', value: `${avgUptime}%`, textColor: 'text-green-600 dark:text-green-400' },
+    { label: 'Total Monitors', value: total, textColor: 'text-white' },
+    { label: 'Active', value: active, textColor: 'text-[#00ffcc]' }, // cyan
+    { label: 'Down', value: down, textColor: 'text-red-400' },
+    { label: 'Avg Uptime (24h)', value: `${avgUptime}%`, textColor: 'text-[#ccff00]' }, // lime
   ]
 
   return (
@@ -24,12 +24,15 @@ function SummaryCards({ monitors }) {
       {cards.map((card, index) => (
         <div 
           key={index} 
-          className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-slate-200 dark:border-slate-700 shadow-sm"
+          className="bg-[#0a0a0f] rounded-2xl p-6 border border-white/10 shadow-[0_0_30px_rgba(204,255,0,0.03)] relative overflow-hidden group"
         >
-          <dt className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">
+          {/* Subtle hover glow */}
+          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          
+          <dt className="text-sm font-medium text-slate-400 truncate relative z-10">
             {card.label}
           </dt>
-          <dd className={`mt-2 text-3xl font-semibold ${card.textColor}`}>
+          <dd className={`mt-2 text-4xl font-bold ${card.textColor} relative z-10 drop-shadow-md`}>
             {card.value}
           </dd>
         </div>

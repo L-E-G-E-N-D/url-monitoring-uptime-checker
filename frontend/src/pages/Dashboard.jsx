@@ -234,14 +234,14 @@ function Dashboard() {
     }))
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-200">
+    <div className="min-h-screen bg-black transition-colors duration-200">
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-16">
         
         {!token && (
-            <div className="mb-8 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-900/30 rounded-md text-center text-yellow-800 dark:text-yellow-200">
-                You are not logged in. <a href="/login" className="underline font-medium hover:text-yellow-900 dark:hover:text-yellow-100">Login</a> to manage monitors.
+            <div className="mb-8 p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-xl text-center text-yellow-200">
+                You are not logged in. <a href="/" className="underline font-medium hover:text-yellow-100">Login</a> to manage monitors.
             </div>
         )}
 
@@ -250,13 +250,13 @@ function Dashboard() {
           <SummaryCards monitors={monitors} />
           <RecentActivity monitors={monitors} />
 
-          <div className="mb-8 bg-white dark:bg-slate-800 shadow sm:rounded-lg border border-slate-200 dark:border-slate-700 p-5">
+          <div className="mb-8 bg-[#0a0a0f] shadow-[0_0_30px_rgba(204,255,0,0.03)] sm:rounded-2xl border border-white/10 p-5">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Analytics</h2>
+              <h2 className="text-base font-semibold text-white">Analytics</h2>
               <select
                 value={selectedAnalyticsMonitorId}
                 onChange={(e) => setSelectedAnalyticsMonitorId(e.target.value)}
-                className="w-full sm:w-80 rounded-md border-0 py-2 pl-3 pr-10 text-slate-900 dark:text-slate-100 dark:bg-slate-900 ring-1 ring-inset ring-slate-300 dark:ring-slate-600 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm"
+                className="w-full sm:w-80 rounded-xl border border-white/10 py-2 pl-3 pr-10 text-white bg-black focus:ring-1 focus:ring-[#ccff00] focus:border-[#ccff00] sm:text-sm outline-none"
               >
                 {monitors.map((monitor) => (
                   <option key={monitor.id} value={monitor.id}>
@@ -272,42 +272,42 @@ function Dashboard() {
             {!analyticsLoading && analyticsData && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
-                  <div className="rounded-md border border-slate-200 dark:border-slate-700 p-3">
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Uptime</p>
-                    <p className="text-xl font-semibold text-slate-900 dark:text-white">{analyticsData.uptimePercentage}%</p>
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-xs text-slate-400">Uptime</p>
+                    <p className="text-2xl font-bold text-white">{analyticsData.uptimePercentage}%</p>
                   </div>
-                  <div className="rounded-md border border-slate-200 dark:border-slate-700 p-3">
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Avg Latency</p>
-                    <p className="text-xl font-semibold text-slate-900 dark:text-white">{analyticsData.avgLatency}ms</p>
+                  <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-xs text-slate-400">Avg Latency</p>
+                    <p className="text-2xl font-bold text-white">{analyticsData.avgLatency}ms</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                  <div className="rounded-md border border-slate-200 dark:border-slate-700 p-3">
-                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Uptime Trend</p>
+                  <div className="rounded-xl border border-white/10 bg-black p-4">
+                    <p className="text-sm font-medium text-slate-300 mb-3">Uptime Trend</p>
                     <div className="h-64">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" />
-                          <XAxis dataKey="name" />
-                          <YAxis domain={[0, 100]} />
-                          <Tooltip />
-                          <Line type="monotone" dataKey="uptime" stroke="#16a34a" strokeWidth={2} dot={false} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                          <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                          <YAxis domain={[0, 100]} stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                          <Tooltip contentStyle={{ backgroundColor: '#0a0a0f', borderColor: '#ffffff20', borderRadius: '8px' }} />
+                          <Line type="monotone" dataKey="uptime" stroke="#ccff00" strokeWidth={2} dot={false} />
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
                   </div>
 
-                  <div className="rounded-md border border-slate-200 dark:border-slate-700 p-3">
-                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Latency Trend</p>
+                  <div className="rounded-xl border border-white/10 bg-black p-4">
+                    <p className="text-sm font-medium text-slate-300 mb-3">Latency Trend</p>
                     <div className="h-64">
                       <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={chartData}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" />
-                          <XAxis dataKey="name" />
-                          <YAxis />
-                          <Tooltip />
-                          <Line type="monotone" dataKey="latency" stroke="#2563eb" strokeWidth={2} dot={false} />
+                          <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
+                          <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                          <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                          <Tooltip contentStyle={{ backgroundColor: '#0a0a0f', borderColor: '#ffffff20', borderRadius: '8px' }} />
+                          <Line type="monotone" dataKey="latency" stroke="#00ffcc" strokeWidth={2} dot={false} />
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
@@ -317,7 +317,7 @@ function Dashboard() {
             )}
           </div>
           
-          <form onSubmit={handleAddMonitor} className="mb-8 bg-white dark:bg-slate-800 shadow sm:rounded-lg p-6 flex flex-col sm:flex-row gap-4 border border-slate-200 dark:border-slate-700">
+          <form onSubmit={handleAddMonitor} className="mb-8 bg-[#0a0a0f] shadow-[0_0_30px_rgba(204,255,0,0.03)] sm:rounded-2xl p-6 flex flex-col sm:flex-row gap-4 border border-white/10">
               <input 
                 type="url" 
                 name="url"
@@ -326,7 +326,7 @@ function Dashboard() {
                 value={newUrl} 
                 onChange={e => setNewUrl(e.target.value)}
                 required 
-                className="flex-1 min-w-0 block w-full px-3 py-2 rounded-md border-0 text-slate-900 dark:text-slate-100 dark:bg-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-600 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                className="flex-1 min-w-0 block w-full px-4 py-3 rounded-xl border border-white/10 text-white bg-black placeholder-slate-500 focus:ring-1 focus:ring-[#ccff00] focus:border-[#ccff00] sm:text-sm outline-none transition-all"
               />
               <div className="sm:w-32">
                 <input 
@@ -338,12 +338,12 @@ function Dashboard() {
                   onChange={e => setInterval(e.target.value)}
                   min="1"
                   required 
-                  className="block w-full px-3 py-2 rounded-md border-0 text-slate-900 dark:text-slate-100 dark:bg-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-600 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                  className="block w-full px-4 py-3 rounded-xl border border-white/10 text-white bg-black placeholder-slate-500 focus:ring-1 focus:ring-[#ccff00] focus:border-[#ccff00] sm:text-sm outline-none transition-all"
                 />
               </div>
               <button 
                 type="submit"
-                className="inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                className="inline-flex justify-center rounded-xl bg-gradient-to-r from-[#ccff00] to-[#e6ff00] px-6 py-3 text-sm font-semibold text-black shadow-[0_0_15px_rgba(204,255,0,0.3)] hover:brightness-110 transition-all cursor-pointer items-center"
               >
                 Add Monitor
               </button>
@@ -352,8 +352,8 @@ function Dashboard() {
           {/* Search & Filter Controls */}
           <div className="mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
             <div className="relative flex-1 w-full">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <svg className="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                <svg className="h-5 w-5 text-slate-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
                 </svg>
               </div>
@@ -362,14 +362,14 @@ function Dashboard() {
                 placeholder="Search monitors..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full rounded-md border-0 py-2 pl-10 text-slate-900 dark:text-slate-100 dark:bg-slate-800 ring-1 ring-inset ring-slate-300 dark:ring-slate-700 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                className="block w-full rounded-xl border border-white/10 py-3 pl-11 pr-4 text-white bg-[#0a0a0f] placeholder-slate-500 focus:ring-1 focus:ring-[#ccff00] focus:border-[#ccff00] sm:text-sm outline-none transition-all"
               />
             </div>
             <div className="w-full sm:w-48">
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="block w-full rounded-md border-0 py-2 pl-3 pr-10 text-slate-900 dark:text-slate-100 dark:bg-slate-800 ring-1 ring-inset ring-slate-300 dark:ring-slate-700 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6"
+                className="block w-full rounded-xl border border-white/10 py-3 pl-4 pr-10 text-white bg-[#0a0a0f] focus:ring-1 focus:ring-[#ccff00] focus:border-[#ccff00] sm:text-sm outline-none transition-all"
               >
                 <option value="all">All Monitors</option>
                 <option value="active">Active</option>
@@ -385,17 +385,17 @@ function Dashboard() {
       {error && <p className="text-red-600 dark:text-red-400">{error}</p>}
       
       {!loading && !error && token && (
-        <div className="bg-white dark:bg-slate-800 shadow overflow-hidden sm:rounded-md border border-slate-200 dark:border-slate-700">
-          <ul role="list" className="divide-y divide-slate-200 dark:divide-slate-700">
+        <div className="bg-[#0a0a0f] shadow-[0_0_30px_rgba(147,51,234,0.03)] overflow-hidden sm:rounded-2xl border border-white/10">
+          <ul role="list" className="divide-y divide-white/5">
             {filteredMonitors.length === 0 ? (
               <li className="px-6 py-20 flex flex-col items-center justify-center text-center">
-                 <svg className="h-12 w-12 text-slate-300 dark:text-slate-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <svg className="h-12 w-12 text-slate-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                  </svg>
-                 <h3 className="text-sm font-medium text-slate-900 dark:text-white">
+                 <h3 className="text-sm font-medium text-white">
                     {monitors.length === 0 ? 'No monitors found' : 'No matching monitors'}
                  </h3>
-                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                 <p className="mt-1 text-sm text-slate-400">
                     {monitors.length === 0 
                       ? 'Get started by adding a new URL to monitor above.' 
                       : 'Try adjusting your search or filter criteria.'
@@ -406,42 +406,42 @@ function Dashboard() {
               filteredMonitors.map(monitor => (
                 <li 
                   key={monitor.id} 
-                  className="px-6 py-6 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150 ease-in-out cursor-pointer"
+                  className="px-6 py-6 hover:bg-white/5 transition-colors duration-150 ease-in-out cursor-pointer"
                   onClick={() => setSelectedMonitorId(monitor.id)}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-3 mb-1">
-                        <p className="text-lg font-medium text-slate-900 dark:text-slate-100 truncate">{monitor.url}</p>
+                        <p className="text-lg font-medium text-white truncate">{monitor.url}</p>
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${
                           monitor.lastCheck?.status === 'UP' 
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' 
+                            ? 'bg-[#ccff00]/10 text-[#ccff00] border border-[#ccff00]/20' 
                             : monitor.lastCheck?.status === 'DOWN'
-                              ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
-                              : 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300'
+                              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
+                              : 'bg-white/5 text-slate-300 border border-white/10'
                         }`}>
                           {monitor.lastCheck?.status || 'PENDING'}
                         </span>
                         {!monitor.isActive && (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
                             Paused
                           </span>
                         )}
                       </div>
-                      <div className="mt-2 flex items-center text-sm text-slate-500 dark:text-slate-400 gap-x-6">
+                      <div className="mt-2 flex items-center text-sm text-slate-400 gap-x-6">
                          <div className="flex items-center gap-1">
-                            <span className="font-medium text-slate-700 dark:text-slate-300">Interval:</span> {monitor.checkIntervalMinutes}m
+                            <span className="font-medium text-slate-300">Interval:</span> {monitor.checkIntervalMinutes}m
                          </div>
                          {monitor.lastCheck && (
                             <>
                                 <div className="flex items-center gap-1">
-                                    <span className="font-medium text-slate-700 dark:text-slate-300">Response:</span> {monitor.lastCheck.responseTime}ms
+                                    <span className="font-medium text-slate-300">Response:</span> {monitor.lastCheck.responseTime}ms
                                 </div>
                                 <div className="flex items-center gap-1 phone:hidden">
-                                     <span className="font-medium text-slate-700 dark:text-slate-300">Uptime (24h):</span> 
-                                     {monitor.uptimePercent !== null ? <span className="text-slate-900 dark:text-slate-100">{monitor.uptimePercent}%</span> : 'N/A'}
+                                     <span className="font-medium text-slate-300">Uptime (24h):</span> 
+                                     {monitor.uptimePercent !== null ? <span className="text-white">{monitor.uptimePercent}%</span> : 'N/A'}
                                 </div>
-                                <div className="flex items-center gap-1 text-slate-400 dark:text-slate-500">
+                                <div className="flex items-center gap-1 text-slate-500">
                                     Last Check: {new Date(monitor.lastCheck.checkedAt).toLocaleTimeString()}
                                 </div>
                             </>
@@ -451,19 +451,19 @@ function Dashboard() {
                     <div className="flex items-center gap-3 ml-4">
                       <button 
                           onClick={(e) => handleToggleActive(e, monitor)}
-                          className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 bg-white dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 px-3 py-1.5 rounded-md border border-transparent transition-colors"
+                          className="text-sm font-medium text-purple-400 hover:text-purple-300 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl border border-white/5 transition-colors cursor-pointer"
                       >
                           {monitor.isActive ? 'Pause' : 'Resume'}
                       </button>
                       <button 
                           onClick={(e) => handleEditInterval(e, monitor)}
-                          className="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-500 dark:hover:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50 px-3 py-1.5 rounded-md border border-slate-200 dark:border-slate-700 transition-colors"
+                          className="text-sm font-medium text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl border border-white/5 transition-colors cursor-pointer"
                       >
                           Edit
                       </button>
                       <button 
                           onClick={(e) => handleDeleteMonitor(e, monitor.id)} 
-                          className="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 rounded-md border border-transparent transition-colors"
+                          className="text-sm font-medium text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 px-4 py-2 rounded-xl border border-red-500/20 transition-colors cursor-pointer"
                       >
                           Delete
                       </button>
