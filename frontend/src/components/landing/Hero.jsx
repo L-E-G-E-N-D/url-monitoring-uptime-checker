@@ -14,7 +14,7 @@ export default function Hero({ onOpenAuth }) {
           </h1>
           
           <p className="text-lg text-slate-400 max-w-[500px] leading-relaxed">
-            Explore comprehensive uptime tracking and instant alerts with our advanced monitoring platform.
+            Ensure continuous responsiveness and eliminate inactivity-driven downtime with our advanced monitoring and health check suite.
           </p>
 
           <div className="pt-4">

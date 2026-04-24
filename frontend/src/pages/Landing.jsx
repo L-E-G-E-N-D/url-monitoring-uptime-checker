@@ -3,6 +3,8 @@ import Navbar from '../components/landing/Navbar';
 import Hero from '../components/landing/Hero';
 import FeatureStrip from '../components/landing/FeatureStrip';
 import FeaturesGrid from '../components/landing/FeaturesGrid';
+import LearnSection from '../components/landing/LearnSection';
+import AboutSection from '../components/landing/AboutSection';
 import CTA from '../components/landing/CTA';
 import Footer from '../components/landing/Footer';
 import AuthModal from '../components/landing/AuthModal';
@@ -27,6 +29,8 @@ export default function Landing() {
           <Hero onOpenAuth={() => openAuth('signup')} />
           <FeatureStrip />
           <FeaturesGrid />
+          <LearnSection />
+          <AboutSection />
           <CTA onOpenAuth={() => openAuth('signup')} />
         </main>
         

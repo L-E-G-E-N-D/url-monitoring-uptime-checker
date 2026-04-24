@@ -18,8 +18,8 @@ export default function Navbar({ onOpenAuth }) {
         
         <div className="hidden md:flex items-center gap-10 text-[15px] font-medium text-slate-300">
           <a href="#features" className="hover:text-white transition-colors">Services</a>
-          <a href="#" className="hover:text-white transition-colors">Learn</a>
-          <a href="#" className="hover:text-white transition-colors">About</a>
+          <a href="#learn" className="hover:text-white transition-colors">Learn</a>
+          <a href="#about" className="hover:text-white transition-colors">About</a>
         </div>
 
         <div className="flex items-center">
